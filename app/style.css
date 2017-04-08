@@ -1,0 +1,707 @@
+* {
+  box-sizing: border-box;
+  cursor: default;
+}
+
+body, div, p, textarea, pre, ul, ol, li, blockquote, hr,
+table, tbody, thead, tr, td, th,
+h1, h2, h3, h4, h5, a, button, input {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  list-style: none;
+  text-decoration: none;
+  background: transparent;
+  -webkit-appearance: none;
+  outline: none;
+}
+
+a, button {
+  white-space: normal;
+  cursor: pointer;
+}
+
+input {
+  cursor: text;
+}
+
+
+.no-transition * {
+  transition: none !important;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Lucida Grande, Helvetica Neue, Arial, Helvetica, sans-serif;
+  color: #000;
+  font-size: 1rem;
+}
+
+/*****************************************************************************/
+
+body {
+  /*min-width: 1000px; MIN_WIDTH */
+  /*min-height: 508px; MIN_HEIGHT */
+  line-height: 1.5em;
+  font-size: 12px;
+
+  background: #ececec;
+  color: #000;
+
+  overflow: hidden;
+  height: 100%;
+  max-height: 100%;
+  position: absolute;
+  top: 0; bottom: 0; left: 0; right: 0;
+
+  -webkit-user-select: none;
+}
+.mac {
+  overflow: hidden;
+}
+
+.ss {
+  min-width: 760px;
+  min-height: 328px;
+}
+
+.fs body {
+  min-width: 0;
+  min-height: 0;
+}
+
+/*****************************************************************************/
+/* menu bar */
+
+.v2-menu-bar > .v2-menu-item:first-child {
+  font-size: 16px;
+  letter-spacing: -1px;
+  font-weight: 600;
+  font-family: Source Code Pro, monospace;
+  line-height: 14px;
+}
+
+/*****************************************************************************/
+/* phosphorus */
+
+#phosphorus {
+  position: absolute;
+  top: -1px;
+  right: 8px;
+  padding: 0 1px 1px; /* phosphorus uses box-shadow for border */
+  width: 482px;
+  height: 392px;
+  font-size: 16px;
+  transition: width 250ms ease-in-out, height 250ms ease-in-out;
+}
+.player {
+  background: #fff;
+  transition: width 250ms ease-in-out,
+              height 250ms ease-in-out;
+  overflow: hidden;
+}
+
+.ss #phosphorus {
+  width: 242px;
+  height: 212px;
+}
+.ss .player {
+  width: 240px;
+  height: 180px;
+}
+.fs .ss .player {
+  width: 480px;
+  height: 360px;
+}
+
+
+#phosphorus * {
+  box-sizing: content-box;
+}
+
+.player {
+  box-shadow: 0 0 0 1px #999;
+}
+
+.controls {
+  margin-left: -2px;
+}
+.controls span {
+  opacity: 1;
+  position: relative;
+  background-image: url(tosh.svg);
+}
+
+.flag.needs-preview {
+  background-position: 0 -4em;
+}
+.flag.has-errors {
+  background-position: -2em -4em;
+}
+
+.controls .small-stage {
+  float: left;
+  background-position: -320px 0;
+}
+.ss .controls .small-stage {
+  background-position: -320px -32px;
+}
+.small-stage.disabled,
+.small-stage.disabled:active {
+  opacity: 0.4 !important;
+}
+
+.controls .turbo {
+  padding: 0;
+}
+
+/*****************************************************************************/
+/* list editor */
+
+.button {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  text-align: center;
+  background-image: url(tosh.svg);
+  background-position: -4px -4px;
+  opacity: 0.6;
+  float: left;
+}
+.button-remove {
+  background-position: -356px -4px;
+}
+.button-handle {
+  background-position: -388px -4px;
+  cursor: move;
+}
+.button-edit {
+  background-position: -420px -4px;
+}
+
+.thumb {
+  background-size: contain;
+  position: absolute;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.items {
+  position: relative;
+}
+.dragging {
+  position: absolute !important;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  box-shadow: 0 0 8px rgba(0,0,0, 0.8);
+}
+.drag-placeholder {
+  background: #ececec !important;
+  border: none !important;
+}
+
+/*****************************************************************************/
+/* fullscreen */
+
+.fs body {
+  background: #000;
+  position: absolute;
+}
+.fs #wrap {
+  top: 0;
+}
+.fs #menu,
+.fs .tab-bar,
+.fs .sidebar,
+.fs .editor,
+.fs .container,
+.fs .small-stage {
+  display: none;
+}
+.fs #phosphorus {
+  position: static;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+}
+.fs .player {
+  background: #fff;
+  transition: none;
+  overflow: visible;
+}
+
+/*****************************************************************************/
+/* sprites switcher */
+
+.tosh-sprites {
+  position: absolute;
+  border: 1px solid #999;
+  background: #f7f7f7; /* cf. CodeMirror-gutters */
+  bottom: 0;
+  overflow: scroll;
+  top: 400px;
+  right: 8px;
+  bottom: 8px;
+  width: 482px;
+  font-size: 14px;
+  transition: top 250ms ease-in-out, width 250ms ease-in-out;
+}
+
+.ss .switcher {
+  top: 220px;
+  width: 242px;
+}
+
+.sprite {
+  padding: 0 8px;
+  line-height: 24px;
+  background: #fff;
+  cursor: pointer;
+  height: 24px;
+  position: relative;
+}
+.sprite-active {
+  background: #0669d9;
+  color: #fff;
+}
+.sprite-new {
+  background: #eee; /* cf. costume-new */
+  color: #888;
+}
+
+.sprite .thumb {
+  width: 24px;
+  height: 18px;
+  float: left;
+  margin-top: 3px;
+}
+
+.sprite .name-wrap {
+  position: absolute;
+  left: 34px;
+  right: 80px;
+  top: 1px;
+  bottom: 1px;
+}
+.sprite .name {
+  text-overflow: ellipsis;
+  padding: 0 6px;
+  width: 100%;
+  height: 22px;
+}
+.sprite .name[readonly] {
+  cursor: inherit;
+}
+.sprite .name-editing {
+  background: #fff;
+  color: #000;
+}
+
+.sprite .buttons {
+  position: absolute;
+  top: 0;
+  right: 4px;
+  visibility: hidden;
+  background: inherit;
+  z-index: 1;
+}
+.sprite:hover .buttons {
+  visibility: visible;
+}
+
+.icon-error { /* cf .button */
+  display: none;
+  width: 12px;
+  height: 24px;
+  opacity: 1;
+  position: absolute;
+  right: 10px;
+  top: 0;
+  font-size: 20px;
+  text-align: center;
+  color: #e40046; /* cf .error-widget */
+  line-height: 22px;
+}
+.has-errors .icon-error {
+  display: inline-block;
+}
+
+/*****************************************************************************/
+/* scriptable */
+
+.scriptable {
+  position: absolute;
+  top: 8px; bottom: 8px; left: 8px;
+  right: 498px;
+  display: none;
+  transition: right 250ms ease-in-out;
+}
+.scriptable-active {
+  display: block;
+}
+
+.ss .scriptable {
+  right: 258px;
+}
+
+/*****************************************************************************/
+/* tabs */
+
+.tabs {
+  border-bottom: 1px solid #999;
+  line-height: 24px;
+  height: 24px;
+}
+
+.tab {
+  position: relative;
+  text-transform: capitalize;
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom-color: #999;
+  background: #f7f7f7; /* cf. CodeMirror-gutters */
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  vertical-align: top;
+  height: 24px;
+  min-width: 50px;
+  text-align: center;
+}
+.tab-active, .tab:hover {
+  border-color: #999;
+}
+.tab-active, .tab-active:hover {
+  background: #fff;
+  z-index: 1;
+
+  border-bottom-color: transparent;
+}
+
+.tab span {
+  padding: 0 8px;
+  position: relative;
+  top: -1px;
+}
+
+/*****************************************************************************/
+/* panes */
+
+/* nb: design for width=1160 */
+
+.pane, .tabs { width: 200px; }
+.editor {       left: 200px; }
+
+.pane {
+  position: absolute;
+  top: 23px;
+  bottom: 0;
+  left: 0;
+
+  background: #fff;
+  border: 1px solid #999;
+
+  padding: 4px;
+
+  overflow-x: hidden;
+  overflow-y: scroll;
+
+  display: none;
+}
+.pane-active {
+  display: block;
+}
+
+.pane h2 {
+  position: static;
+  font-size: 1em;
+  font-weight: 700;
+  padding: 0;
+  text-align: left;
+}
+
+.pane > div {
+  margin-bottom: 8px;
+}
+.pane > hr {
+  margin-bottom: 16px;
+}
+
+/*****************************************************************************/
+/* names editor */
+
+.reporters {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.reporters li {
+  margin: 0;
+}
+
+.reporters li p {
+  display: inline-block;
+
+  font-weight: 400;
+  line-height: 10px;
+  margin: 0;
+
+  vertical-align: middle;
+  border-radius: 2000px;
+
+  padding: 4px 6px;
+  min-width: 16px;
+  min-height: 20px;
+  width: 100%;
+  position: relative;
+}
+
+.reporters li p.edit {
+  padding: 0 0;
+}
+.reporters li input {
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  width: auto;
+  outline: none;
+  height: 16px;
+}
+
+.new-variable {
+  background: #fffeef;
+  display: inline-block;
+  border-bottom: 0.1em solid transparent;
+  margin: 0 0 4px;
+  padding: 0 6px 0 2px;
+}
+.new-variable:hover {
+  border-bottom: 0.1em solid;
+  cursor: pointer;
+  background: #fffed0;
+}
+
+/*****************************************************************************/
+/* code editor */
+
+.editor {
+  position: absolute;
+  top: 0; bottom: 0;
+  margin-left: 8px;
+  right: 0;
+
+  border: 1px solid #999;
+  color: rgba(0, 0, 0, 0.8);
+  background: #fff; /* prevents flickering */
+
+  overflow: hidden;
+}
+
+.CodeMirror-cursors {
+  visibility: hidden !important;
+}
+.CodeMirror-focused .CodeMirror-cursors {
+  visibility: visible !important;
+}
+.CodeMirror-code:focus {
+    outline: none;
+}
+
+.CodeMirror {
+  font-family: Noto Sans, sans-serif;
+  letter-spacing: +0.33px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.CodeMirror-linenumber {
+  font-family: Source Code Pro, monospace;
+  font-size: 12px;
+  /*min-width: 18px;*/
+}
+
+.CodeMirror-dialog {
+  font-family: Source Code Pro, monospace;
+  letter-spacing: -0.6px;
+  font-size: 14px;
+  word-spacing: -2px;
+}
+.CodeMirror-dialog input {
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.CodeMirror-gutters {
+  border-right: 1px solid #999;
+}
+
+.CodeMirror-overlayscroll-vertical div {
+  background: #7b7b7b;
+}
+.CodeMirror-simplescroll-vertical div {
+  background: #7b7b7b;
+  border: 1px solid #7b7b7b;
+}
+.error-annotation {
+  background: #e40046;
+}
+
+.error-widget {
+  max-height: 400px;
+  font-family: Source Code Pro, monospace;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  word-spacing: -1px;
+  line-height: 20px;
+  color: #fff;
+  background: #e40046;
+  padding: 2px 5px 3px;
+  padding-left: 24px;
+}
+.error-widget:before {
+  content: "!";
+  position: absolute;
+  display: inline-block;
+  width: 12px;
+  left: 0;
+  top: 2px;
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.CodeMirror-hints {
+  max-height: 400px;
+  font-family: Noto Sans, sans-serif;
+  font-size: 14px;
+}
+.CodeMirror-hints .empty {
+  height: 6px;
+  display: block;
+}
+.CodeMirror-hint {
+  position: relative;
+  max-width: 23em; /* 19 + 4 */
+  padding: 1px 4px;
+  padding-right: 60px; /* 48 + 12 */
+}
+.CodeMirror-hint-active:after {
+  position: absolute;
+  display: inline-block;
+  right: 0;
+  top: 0;
+  content: "Tab ⇥";
+  text-align: right;
+  padding-left: 6px;
+  padding-right: 4px;
+  font-size: 11px;
+  background: rgba(255,255,255, 0.3);
+  color: #fff;
+  background: #08f;
+  border-radius: 2px;
+}
+li.CodeMirror-hint-active {
+  background: #aad7ff;
+}
+
+/*****************************************************************************/
+/* media panes */
+
+.pane-costumes,
+.pane-sounds {
+  padding: 0;
+}
+.costume,
+.sound {
+  border-bottom: 1px solid #999;
+  height: 83px;
+  position: relative;
+  padding: 4px;
+  background: #fff;
+}
+
+.costume-new {
+  cursor: pointer;
+}
+.costume-new input {
+  float: right;
+  margin-right: 4px;
+  width: 5em;
+  font-family: Source Code Pro, monospace;
+  border: 1px solid #999;
+  line-height: 16px;
+  margin-top: 3px;
+}
+.costume-new,
+.drag-here {
+  background: #eee;
+  color: #888;
+  height: 32px !important;
+  line-height: 24px;
+  border-bottom: none;
+}
+.drag-here {
+  text-align: center;
+}
+
+.costume .thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 100px;
+  height: 75px;
+
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+}
+.costume .details {
+  padding-left: 104px;
+  word-wrap: break-word;
+  overflow: hidden;
+}
+.costume .name {
+  max-width: 100%;
+}
+
+.sound {
+  height: 64px;
+}
+.sound audio {
+  max-width: 100%;
+  height: 30px;
+}
+
+.costume .buttons,
+.sound .buttons {
+  display: inline-block;
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  visibility: hidden;
+}
+.costume:hover .buttons,
+.sound:hover .buttons {
+  visibility: visible;
+}
+
+.media-number,
+.media-stats {
+  font-family: Source Code Pro, monospace;
+}
+.media-number {
+  color: #999;
+  font-size: 14px;
+}
+.media-stats {
+}
+
+/*****************************************************************************/
+
+.tosh-sprites {
+}
