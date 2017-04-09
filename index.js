@@ -162,7 +162,6 @@ app.add(split)
 
 right.resize()
 window.addEventListener('resize', split.resizeChildren.bind(split))
-window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
 //bind(spriteList, 'model', app.model, 'project.sprites')
 spriteList.model = app.model.project.sprites

@@ -260,6 +260,28 @@ body {
   font-size: 14px;
 }
 
+.sprite-icon {
+  border-radius: 4px;
+  padding: 4px;
+  /* margin: 2px; */
+}
+.sprite-icon.v2-collection-item--selected {
+  border: 2px solid #179fd7;
+}
+.sprite-icon > .name {
+  position: absolute;
+  bottom: 4px;
+  text-align: center;
+  left: 4px;
+  right: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sprite-icon.v2-collection-item--selected > .name {
+  bottom: 2px;
+}
+
+
 .ss .switcher {
   top: 220px;
   width: 242px;
@@ -655,6 +677,3 @@ li.CodeMirror-hint-active {
 }
 
 /*****************************************************************************/
-
-.tosh-sprites {
-}
