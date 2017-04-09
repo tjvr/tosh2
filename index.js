@@ -1,8 +1,6 @@
 'use strict'
-require('v2/polyfill-pad')
-//const bind = require('v2/bind')
-//const emitter = require('v2/emitter')
-//const {key, modifiers} = require('v2/format')
+const itt = require('itt')
+
 const fs = require('v2/fs') // {zip}
 const h = require('v2/h')
 const path = require('v2/path') // {basename, ext}
@@ -10,9 +8,11 @@ const path = require('v2/path') // {basename, ext}
 const rt = require('v2/rt') // {platform, type, chooseFile, saveFile, isApple}
 const {debounce, toJSON, ucfirst, wrapBlob} = require('v2/util')
 
+const Model = require('v2/model/model')
 const App = require('v2/view/app')
 const MenuBar = require('v2/view/menu-bar')
 const Split = require('v2/view/split')
+const UndoManager = require('v2/undo-manager')
 
 const {Project} = require('./project')
 const {SpriteList, RightLayout} = require('./views')
@@ -24,6 +24,7 @@ function open(url) {
   window.location.href = url
 }
 function openInTab(url) {
+  // TODO avoid pop-up blocker
   h('a', {href: url, target: '_blank'}).click()
 }
 function *globalBindings(m) {
@@ -40,20 +41,30 @@ function *globalBindings(m) {
 }
 
 
-class ToshApp extends App {
+class Root extends Model {
   constructor() {
     super()
     this.project = Project.create()
     this.name = 'tosh.sb2'
   }
+}
+Root._property('project')
+Root._property('name')
+
+
+class ToshApp extends App {
+  constructor() {
+    super()
+    this.model = new Root
+  }
 
   openProject() {
     rt.chooseFile('.sb2').then(file => {
-      this.name = path.basename(file.name)
+      this.model.name = path.basename(file.name)
       JSZip.loadAsync(file)
       .then(Project.load)
       .then(stage => {
-        this.project = stage
+        this.model.project = stage
         console.log(stage)
       })
     })
@@ -64,9 +75,9 @@ class ToshApp extends App {
   }
 
   saveProject() {
-    const zip = Project.save(this.project)
+    const zip = Project.save(this.model.project)
     zip.generateAsync({type: 'blob'}).then(blob => {
-      rt.saveFile(blob, this.name)
+      rt.saveFile(blob, this.model.name)
     })
   }
 
@@ -84,26 +95,46 @@ class ToshApp extends App {
 const spriteList = new SpriteList
 window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
-const app = new ToshApp
+const app = window.app = new ToshApp
 app.mount(document.body)
 
-const mb = new MenuBar
-mb.target = app
-mb.spec = [
-  ['Tosh', () => open('/')],
-  ['File', [
-    ['Open', 'openProject', {key: '#o'}],
-    ['Import from Scratch…', 'importProject', {key: '#i', enabled: false}],
-    ['Save', 'saveProject', {key: '#s'}],
-  ]],
-  ['Help', [
-    ['Guide', () => openInTab('/help/guide/')],
-    ['Tips', () => openInTab('/help/tips/')],
-    ['List of Blocks', () => openInTab('/help/blocks/')],
-    '-',
-    ['Send Feedback', () => open('mailto:tim@tjvr.org')],
-  ]],
-]
+const um = window.um = new UndoManager
+ToshApp.prototype.undo = um.undo.bind(um)
+ToshApp.prototype.redo = um.redo.bind(um)
+um.watch(app.model)
+
+const undoItem = new MenuBar.Item({title: 'Undo', action: 'undo', key: '#z'})
+const redoItem = new MenuBar.Item({title: 'Redo', action: 'redo', key: rt.isMac ? '^#z' : '#y'})
+
+setInterval(() => {
+  undoItem.title = um.canUndo ? `Undo ${itt.last(um._past).name}` : 'Undo'
+  undoItem.enabled = um.canUndo
+  redoItem.title = um.canRedo ? `Redo ${itt.last(um._future).name}` : 'Redo'
+  redoItem.enabled = um.canRedo
+}, 100)
+
+const mb = new MenuBar({
+  target: app,
+  spec: [
+    ['Tosh', () => open('/')],
+    ['File', [
+      ['Open', 'openProject', {key: '#o'}],
+      ['Import from Scratch…', 'importProject', {key: '#i', enabled: false}],
+      ['Save', 'saveProject', {key: '#s'}],
+    ]],
+    ['Edit', [
+      undoItem,
+      redoItem,
+    ]],
+    ['Help', [
+      ['Guide', () => openInTab('/help/guide/')],
+      ['Tips', () => openInTab('/help/tips/')],
+      ['List of Blocks', () => openInTab('/help/blocks/')],
+      '-',
+      ['Send Feedback', () => open('mailto:tim@tjvr.org')],
+    ]],
+  ],
+})
 app.keyBindings = Array.from(globalBindings(mb))
 app.keyBindings.push({
   key: 'F1', command: 'openHelp'

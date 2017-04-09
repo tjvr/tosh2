@@ -14,7 +14,7 @@
   "dependencies": {
     "codemirror": "^5.25.0",
     "jszip": "^3.1.3",
-    "v2": "git://github.com/tjvr/v2.git#a610a82"
+    "v2": "git://github.com/nathan/v2.git#a605baa"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",
