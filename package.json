@@ -7,7 +7,7 @@
   "repository": "https://github.com/tjvr/tosh",
   "author": "Tim Radvan <tim@tjvr.org>",
   "scripts": {
-    "build": "browserify index.js -t babelify --outfile bundle.js",
+    "build": "browserify index.js -t [ babelify --presets [ es2015 babili ] ] > build/tosh.min.js",
     "start": "prcl -w index.js app/parcel.js& http-server -s"
   },
   "dependencies": {
