@@ -61,6 +61,14 @@ body {
   overflow: hidden;
 }
 
+.v2-split {
+  position: absolute;
+  top: 30px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+}
+
 .ss {
   min-width: 760px;
   min-height: 328px;
@@ -93,12 +101,14 @@ body {
   width: 482px;
   height: 392px;
   font-size: 16px;
-  transition: width 250ms ease-in-out, height 250ms ease-in-out;
 }
-.player {
+.tosh-player {
+  border: 1px solid blue; /* DEBUG */
+  display: block;
+  flex: none;
+  position: absolute;
+
   background: #fff;
-  transition: width 250ms ease-in-out,
-              height 250ms ease-in-out;
   overflow: hidden;
 }
 
@@ -243,12 +253,11 @@ body {
   background: #f7f7f7; /* cf. CodeMirror-gutters */
   bottom: 0;
   overflow: scroll;
-  top: 400px;
-  right: 8px;
-  bottom: 8px;
-  width: 482px;
+  margin-top: 4px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   font-size: 14px;
-  transition: top 250ms ease-in-out, width 250ms ease-in-out;
 }
 
 .ss .switcher {
@@ -393,7 +402,7 @@ body {
 /* nb: design for width=1160 */
 
 .pane, .tabs { width: 200px; }
-.editor {       left: 200px; }
+/*.editor {       left: 200px; }*/
 
 .pane {
   position: absolute;
@@ -431,69 +440,11 @@ body {
 }
 
 /*****************************************************************************/
-/* names editor */
-
-.reporters {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 12px;
-}
-.reporters li {
-  margin: 0;
-}
-
-.reporters li p {
-  display: inline-block;
-
-  font-weight: 400;
-  line-height: 10px;
-  margin: 0;
-
-  vertical-align: middle;
-  border-radius: 2000px;
-
-  padding: 4px 6px;
-  min-width: 16px;
-  min-height: 20px;
-  width: 100%;
-  position: relative;
-}
-
-.reporters li p.edit {
-  padding: 0 0;
-}
-.reporters li input {
-  border: none;
-  background: none;
-  font: inherit;
-  color: inherit;
-  width: auto;
-  outline: none;
-  height: 16px;
-}
-
-.new-variable {
-  background: #fffeef;
-  display: inline-block;
-  border-bottom: 0.1em solid transparent;
-  margin: 0 0 4px;
-  padding: 0 6px 0 2px;
-}
-.new-variable:hover {
-  border-bottom: 0.1em solid;
-  cursor: pointer;
-  background: #fffed0;
-}
-
-/*****************************************************************************/
 /* code editor */
 
 .editor {
   position: absolute;
-  top: 0; bottom: 0;
-  margin-left: 8px;
-  right: 0;
+  top: 0; bottom: 0; left: 0; right: 0;
 
   border: 1px solid #999;
   color: rgba(0, 0, 0, 0.8);

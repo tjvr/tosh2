@@ -9,15 +9,35 @@ const path = require('v2/path') // {basename, ext}
 //const request = require('v2/request')
 const rt = require('v2/rt') // {platform, type, chooseFile, saveFile, isApple}
 const {debounce, toJSON, ucfirst, wrapBlob} = require('v2/util')
-const Model = require('v2/model/model')
-const List = require('v2/model/list')
 
 const App = require('v2/view/app')
 const MenuBar = require('v2/view/menu-bar')
+const Split = require('v2/view/split')
 
 const {Project} = require('./project')
-const {SpriteList} = require('./views')
+const {SpriteList, RightLayout} = require('./views')
 const Editor = require('./editor')
+const Player = require('./player')
+
+
+function open(url) {
+  window.location.href = url
+}
+function openInTab(url) {
+  h('a', {href: url, target: '_blank'}).click()
+}
+function *globalBindings(m) {
+  if (!m) return
+  if (m.key) {
+    yield {key: m.key, command: m.action}
+  }
+  if (m.menu) yield* globalBindings(m.menu)
+  if (m.children) {
+    for (const item of m.children) {
+      yield* globalBindings(item)
+    }
+  }
+}
 
 
 class ToshApp extends App {
@@ -67,25 +87,6 @@ window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(sprit
 const app = new ToshApp
 app.mount(document.body)
 
-function open(url) {
-  window.location.href = url
-}
-function openInTab(url) {
-  h('a', {href: url, target: '_blank'}).click()
-}
-function *globalBindings(m) {
-  if (!m) return
-  if (m.key) {
-    yield {key: m.key, command: m.action}
-  }
-  if (m.menu) yield* globalBindings(m.menu)
-  if (m.children) {
-    for (const item of m.children) {
-      yield* globalBindings(item)
-    }
-  }
-}
-
 const mb = new MenuBar
 mb.target = app
 mb.spec = [
@@ -109,10 +110,28 @@ app.keyBindings.push({
 })
 app.add(mb)
 
-app.add(spriteList)
+class ToshSplit extends Split {
+  _layout() {
+    super._layout()
+    for (const pane of this.panes) {
+      pane.resize()
+    }
+  }
+}
 
-let editor = new Editor
-app.add(editor)
+const player = new Player
 
-// TODO Split
+const right = new RightLayout
+right.add(player)
+right.add(spriteList)
+
+const editor = new Editor
+
+const split = new ToshSplit
+split.addPane(editor)
+split.addPane(right)
+app.add(split)
+
+right.resize()
+window.addEventListener('resize', right.resize.bind(right))
 
