@@ -15,11 +15,11 @@ const Model = require('v2/model/model')
 const List = require('v2/model/list')
 
 const App = require('v2/view/app')
-const Collection = require('v2/view/collection')
 const MenuBar = require('v2/view/menu-bar')
-const View = require('v2/view/view')
 
 const {Project} = require('./project')
+const {SpriteList} = require('./views')
+
 
 class ToshApp extends App {
   constructor() {
@@ -36,7 +36,6 @@ class ToshApp extends App {
       .then(stage => {
         this.project = stage
         console.log(stage)
-        setTimeout(() => this.saveProject())
       })
     })
   }
@@ -55,7 +54,16 @@ class ToshApp extends App {
   openHelp() {
     openInTab('/help/')
   }
+
+  get project() { return this._project }
+  set project(stage) {
+    this._project = stage
+    spriteList.model = stage.sprites
+  }
 }
+
+const spriteList = new SpriteList
+window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
 const app = new ToshApp
 app.mount(document.body)
@@ -102,45 +110,7 @@ app.keyBindings.push({
 })
 app.add(mb)
 
-
-class SpriteList extends Collection {
-  constructor() {
-    super()
-    this.setTileSize(96, 96)
-  }
-
-  build() {
-    const el = super.build()
-    el.classList.add('tosh-sprites')
-    return el
-  }
-}
-
-class SpriteItem extends Collection.Item {
-  _update() {
-    this.el.textContent = this.model.objName
-  }
-}
-SpriteItem.prototype.keyBindings = []
-SpriteList.Item = SpriteItem
-
-const {Sprite, project} = require('./project')
-
-const sprites = new List([
-  new Sprite({objName: 'sprite1'}),
-  new Sprite({objName: 'sprite2'}),
-  new Sprite({objName: 'sprite3'}),
-  new Sprite({objName: 'sprite4'}),
-  new Sprite({objName: 'sprite5'}),
-  new Sprite({objName: 'sprite6'}),
-  new Sprite({objName: 'sprite7'}),
-])
-const spriteList = new SpriteList
-spriteList.model = sprites
-
 app.add(spriteList)
-window.spriteList = spriteList
-window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
 // TODO Split
 

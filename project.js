@@ -64,6 +64,7 @@ class Stage extends Scriptable {
     this._children = new List
     this.sprites = new List
     this.bindChildren()
+    this.children = []
 
     this.penLayerMD5 = '5c81a336fab8be57adc039a8a2b33ca9.png'
     this.penLayerID = 0
@@ -96,7 +97,7 @@ class Stage extends Scriptable {
   set children(xs) {
     const children = xs.slice()
     this._children.data = children
-    let sprites = []
+    let sprites = [this]
     for (var i=0; i<children.length; i++) {
       const o = children[i]
       if (o.objName) {
