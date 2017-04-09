@@ -10,7 +10,6 @@ const h = require('v2/h')
 const path = require('v2/path') // {basename, ext}
 //const request = require('v2/request')
 const rt = require('v2/rt') // {platform, type, chooseFile, saveFile, isApple}
-const {asBlob} = require('v2/rt')
 const {debounce, toJSON, ucfirst, wrapBlob} = require('v2/util')
 const Model = require('v2/model/model')
 const List = require('v2/model/list')
@@ -20,10 +19,26 @@ const Collection = require('v2/view/collection')
 const MenuBar = require('v2/view/menu-bar')
 const View = require('v2/view/view')
 
+const {Project} = require('./project')
 
 class ToshApp extends App {
+  constructor() {
+    super()
+    this.project = Project.create()
+    this.name = 'tosh.sb2'
+  }
+
   openProject() {
-    // TODO
+    rt.chooseFile('.sb2').then(file => {
+      this.name = path.basename(file.name)
+      JSZip.loadAsync(file)
+      .then(Project.load)
+      .then(stage => {
+        this.project = stage
+        console.log(stage)
+        this.saveProject()
+      })
+    })
   }
 
   importProject() {
@@ -31,8 +46,10 @@ class ToshApp extends App {
   }
 
   saveProject() {
-    // TODO
-    rt.saveFile()
+    const zip = Project.save(this.project)
+    zip.generateAsync({type: 'blob'}).then(blob => {
+      rt.saveFile(blob, this.name)
+    })
   }
 
   openHelp() {
@@ -68,7 +85,7 @@ mb.spec = [
   ['Tosh', () => open('/')],
   ['File', [
     ['Open', 'openProject', {key: '#o'}],
-    ['Import from Scratch…', 'importProject', {key: '#i'}],
+    ['Import from Scratch…', 'importProject', {key: '#i', enabled: false}],
     ['Save', 'saveProject', {key: '#s'}],
   ]],
   ['Help', [

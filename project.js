@@ -1,406 +1,265 @@
-const Model = require('v2/model/model')
+
+const V2Model = require('v2/model/model')
 const List = require('v2/model/list')
 
 
-class Scriptable extends Model {
-  constructor(o) {
-    super(o)
-    //this._scripts = new List([])
+class Model extends V2Model {
+  constructor(ctx) {
+    super()
+    this.ctx = ctx
   }
 
-  //get scripts() { return this._scripts }
-}
-Scriptable._property('objName')
-
-
-class Stage extends Model {
-  constructor(o) {
-    super(o)
-    this._sprites = new List
-  }
-  /*
-  get children() { return this._children }
-  set children(xs) { this._children.data(xs) }
-  */
-
-  get sprites() { return this._sprites }
-  set sprites(xs) { this._sprites.data = xs.map(o => new Sprite(o)) }
-}
-
-class Sprite extends Scriptable {
-}
-
-/*
-class Project extends Model {
-  constructor(stage, children, sprites) {
-    super({}, true)
-    this.stage = stage
-    this.children = children
-    this.sprites = sprites
-    this._fileName = ''
-    if (Object.freeze) Object.freeze(this)
-  }
-
-  static create() {
-    var sprite = Sprite.create()
-    return new Project(Stage.create(), [sprite], [sprite])
-  }
-
-  static load(zip) {
-    var json = P.IO.parseJSONish(zip.file('project.json').asText())
-    return this.fromJSON(json, zip)
-  }
-
-  static fromJSON(json, zip) {
-    Object.assign({
-      scripts: [],
-      scriptComments: [],
-    }, json)
-  }
-
-  save() {
-    var zip = new JSZip()
-    zip._highestCostumeId = 0
-    zip._highestSoundId = 0
-    var json = this.toJSON(zip)
-    zip.file('project.json', JSON.stringify(json))
-    delete zip._highestCostumeId
-    delete zip._highestSoundId
-    return zip
-  }
-
-  toJSON(zip) {
-    var children = this.children.map((child, index) => {
-      var json = child.toJSON(zip)
-      if (child instanceof Sprite) {
-        json.indexInLibrary = this.sprites.indexOf(child)
+  toJSON(ctx) {
+    const o = {}
+    for (const k of this.dataProperties) {
+    //for (const k of Object.getOwnPropertyNames(this)) {
+      if (k[0] === '_') continue
+      const v = this[k]
+      if (v instanceof List) {
+        o[k] = v.data.map(c => c.toJSON ? c.toJSON(ctx) : c)
+      } else {
+        o[k] = v.toJSON ? v.toJSON(ctx) : v
       }
-      return json
-    })
+    }
+    return o
+  }
 
-    return Object.assign(this.stage.toJSON(zip), {
-      children: children,
-
-      penLayerMD5: '5c81a336fab8be57adc039a8a2b33ca9.png',
-      penLayerID: 0,
-      tempoBPM: 60,
-      videoAlpha: 0.5,
-
-      info: {
-        videoOn: false,
-        spriteCount: this.sprites.length,
-        scriptCount: sum([this.stage].concat(this.sprites).map(s => s.scripts.length)),
-      },
-    })
+  init(o) {
+    if (o) Object.assign(this, o)
+    delete this.ctx
   }
 }
 
 
 class Scriptable extends Model {
-  get isStage() { return false }
-  get name() { return this.objName }
-
-  static fromJSON(json, zip) {
-    var sortedScripts = (json.scripts || []).slice()
-    sortedScripts.sort(function(a, b) {
-      var ax = a[0], ay = a[1], bx = b[0], by = b[1]
-      return ay > by ? +1 : ay < by ? -1
-           : ax > bx ? +1 : ax < bx ? -1 : 0
-    })
-
-    return new this(Object.assign({
-      currentCostumeIndex: 0,
-    }, json, {
-      scripts: sortedScripts.map(Script.fromJSON),
-      scriptComments: [], // TODO: comments
-      variables: json.variables ? json.variables.map(Variable.fromJSON) : [],
-      lists: json.lists ? json.lists.map(List.fromJSON) : [],
-      costumes: json.costumes ? json.costumes.map(json => Costume.fromJSON(json, zip)) : [],
-      sounds: json.sounds ? json.sounds.map(json => Sound.fromJSON(json, zip)) : [],
-    }))
+  constructor(ctx) {
+    super(ctx)
+    this.scripts = []
+    this.scriptComments = [] // TODO comments
+    this.variables = []
+    this.lists = []
+    this._costumes = new List
+    this.currentCostumeIndex = 0
+    this._sounds = new List
   }
-
-  static defaultJSON() {
-    return {
-      scripts: [],
-      scriptComments: [],
-
-      variables: [],
-      lists: [],
-
-      costumes: [],
-      currentCostumeIndex: 0,
-      sounds: [],
-    }
-  }
-
-  rename(name) {
-    return new Scriptable(Object.assign({}, this, { objName: name }))
-  }
-}
-
-class Stage extends Scriptable {
   get isStage() { return true }
 
-  static create() {
-    return new Stage(Object.assign(Scriptable.defaultJSON(), {
-      objName: 'Stage',
-      costumes: [Costume.defaultBackdrop()],
-    }))
-  }
+  static newVariable(name) { return {name, value: 0, isPersistent: false} }
+  static newList(listName) { return {listName, contents: [], isPersistent: false, x: 5, y: 5, width: 102, height: 202, visible: false} }
+
+  get name() { return this.objName }
+  set name(v) { this.objName = v }
 }
+Scriptable._property('objName')
+Scriptable._property('scripts')
+Scriptable._property('scriptComments')
+Scriptable._property('variables')
+Scriptable._property('lists')
+Scriptable.dataProperties.push('costumes')
+Scriptable._property('currentCostumeIndex')
+Scriptable.dataProperties.push('sounds')
+
+
+class Stage extends Scriptable {
+  constructor(o, ctx) {
+    super(ctx)
+    this.objName = 'Stage'
+    this._children = new List
+    this._sprites = new List
+    // TODO listen for sprite modifications & update children accordingly
+
+    this.penLayerMD5 = '5c81a336fab8be57adc039a8a2b33ca9.png'
+    this.penLayerID = 0
+    this.tempoBPM = 60
+    this.videoAlpha = 0.5
+    this.info = {videoOn: false}
+
+    this.init(o)
+  }
+  get isStage() { return true }
+
+  toJSON(ctx) {
+    const json = super.toJSON(ctx)
+    json.info.spriteCount = this.sprites.length
+    json.info.scriptCount = [this].concat(this.sprites.data).map(s => s.scripts.length).reduce((a, b) => a + b, 0)
+    delete json.info.swfVersion
+    delete json.info.flashVersion
+    return json
+  }
+
+  get children() { return this._children }
+  set children(xs) { this._children.data = xs }
+
+  get sprites() { return this._sprites }
+  set sprites(xs) { this._sprites.data = xs.map(o => new Sprite(o, this.ctx)) }
+
+  get costumes() { return this._costumes }
+  set costumes(xs) { this._costumes.data = xs.map(o => new Costume(o, this.ctx)) }
+
+  get sounds() { return this._sounds }
+  set sounds(xs) { this._sounds.data = xs.map(o => new Sound(o, this.ctx)) }
+}
+Stage.prototype.dataProperties.push('children')
+Stage.prototype.dataProperties.push('sprites')
+Stage.prototype.dataProperties.push('penLayerMD5')
+Stage.prototype.dataProperties.push('penLayerID')
+Stage.prototype.dataProperties.push('tempoBPM')
+Stage.prototype.dataProperties.push('videoAlpha')
+Stage.prototype.dataProperties.push('info')
+
 
 class Sprite extends Scriptable {
+  constructor(o, ctx) {
+    super(ctx)
+    this.objName = 'turtle'
+    this.scratchX = 0
+    this.scratchY = 0
+    this.scale = 1
+    this.direction = 90
+    this.rotationStyle = 'normal'
+    this.isDraggable = false
+    this.visible = true
+    this.spriteInfo = {}
+    this.init(o)
+  }
+  get isStage() { return false }
+
   static create() {
-    return new Sprite(Object.assign(Scriptable.defaultJSON(), {
-      objName: 'turtle',
-      costumes: [Costume.defaultCostume()],
-
-      scratchX: 0,
-      scratchY: 0,
-      scale: 1,
-      direction: 90,
-      rotationStyle: 'normal',
-      isDraggable: false,
-      visible: true,
-      spriteInfo: {},
-    }))
+    const turtle = new Sprite
+    // TODO turtle.costumes.add
+    return turtle
   }
+
+  get costumes() { return this._costumes }
+  set costumes(xs) { this._costumes.data = xs.map(o => new Costume(o, this.ctx)) }
+
+  get sounds() { return this._sounds }
+  set sounds(xs) { this._sounds.data = xs.map(o => new Sound(o, this.ctx)) }
 }
 
 
-class Variable extends Model {
-  static create(name) {
-    return new Variable({
-      name: name,
-      value: 0,
-      isPersistent: false,
-    })
+class Costume extends Model {
+  constructor(o, ctx) {
+    super(ctx)
+    // this.costumeName
+    this.baseLayerMD5 = ''
+    this.bitmapResolution = 1
+    this.rotationCenterX = 0
+    this.rotationCenterY = 0
+    this._ext = o && o.baseLayerMD5.split('.').pop()
+    this.init(o)
   }
-
-  rename(name) {
-    return new Variable(Object.assign({}, this, { name: name }))
-  }
-}
-
-class List extends Model {
-  get name() { return this.listName }
-
-  static create(name) {
-    return new List({
-      listName: name,
-      contents: [],
-      isPersistent: false,
-      x: 5,
-      y: 5,
-      width: 102,
-      height: 202,
-      visible: false,
-    })
-  }
-
-  rename(name) {
-    return new List(Object.assign({}, this, { listName: name }))
-  }
-}
-
-
-class Media extends Model {
-}
-
-class Sound extends Media {
-  get name() { return this.name }
-
-  // TODO
-  static audioFromFile(ext, binary) {
-    assert(ext === 'wav')
-    var audio = new Audio
-    audio.src = 'data:audio/' + ext + ';base64,' + btoa(binary)
-    audio.controls = true
-    return audio
-  }
-
-  static fromJSON(json, zip) {
-    // TODO
-  }
-
-  toJSON(zip) {
-    // TODO
-  }
-}
-
-class Costume extends Media {
-  get name() { return this.costumeName }
-
-  static create(name, ext, ab) {
-    var c = new Costume({
-      costumeName: name,
-      _ext: ext,
-      _file: ab,
-      baseLayerMD5: '',
-      bitmapResolution: 1,
-      rotationCenterX: 0,
-      rotationCenterY: 0,
-      _thumbnail: Thumbnail.loadFile(ext, arrayBufferToBinary(ab)),
-    })
-    c._thumbnail.then(t => {
-      costume.rotationCenterX = t.width / 2
-      costume.rotationCenterY = t.height / 2
-    })
-  }
-
-  static fromJSON(json, zip) {
-    var ext = json.baseLayerMD5.split('.').pop()
-    var root = json.baseLayerID + '.'
+  set baseLayerID(id) {
+    const zip = this.ctx.zip
+    const root = id + '.'
+    var ext = this._ext
     var f = zip.file(root + ext)
     if (!f) { ext = 'png'; f = zip.file(root + ext) }
     if (!f) { ext = 'jpg'; f = zip.file(root + ext) }
     if (!f) { ext = 'svg'; f = zip.file(root + ext) }
-    if (!f) throw "Couldn't find image: " + root + ext
-
-    // TODO load textLayer too
-
-    return new Costume(Object.assign({}, json, {
-      baseLayerID: undefined,
-      _ext: ext,
-      _file: f.asArrayBuffer(),
-      _thumbnail: Thumbnail.fromFile(ext, f.asBinary()),
-    }))
+    if (!f) throw new Error("Couldn't find image: " + root + ext)
+    this._ext = ext
+    this._file = f.async('blob') // Promise
+    // this._thumbnail = this._file.then(makeThumbnail)
   }
 
-  toJSON(zip) {
-    var json = Object.assign(super.toJSON(zip), {
-      baseLayerID: zip._highestCostumeId++,
-    })
-
-    var filename = json.baseLayerID + '.' + this._ext
-    zip.file(filename, this._file)
-
+  toJSON(ctx) {
+    console.log(this.name)
+    const json = super.toJSON(ctx)
+    const id = json.baseLayerID = ctx.highestCostumeId++
+    const name = id + '.' + this._ext
+    this._file.then(blob => ctx.zip.file(name, blob))
     return json
   }
 
-  rename(name) {
-    return new Costume(Object.assign({}, this, { name: name }))
+  get name() { return this.costumeName }
+  set name(v) { this.costumeName = v }
+}
+Costume._property('costumeName')
+Costume.dataProperties.push('baseLayerMD5')
+Costume.dataProperties.push('bitmapResolution')
+Costume.dataProperties.push('rotationCenterX')
+Costume.dataProperties.push('rotationCenterY')
+
+
+class Sound extends Model {
+  constructor(o, ctx) {
+    super(ctx)
+    // this.soundName
+    this.md5 = ''
+    this.sampleCount = 258
+    this.rate = 11025
+    this.format = ''
+    this.init(o)
+  }
+  set soundID(id) {
+    const zip = this.ctx.zip
+    const f = zip.file(id + '.wav')
+    if (!f) throw new Error("Couldn't find sound: " + root + ext)
+    this._file = f.async('blob') // Promise
   }
 
-  static defaultBackdrop() {
-    return new Costume({
-      name: 'backdrop1',
-      ext: 'svg',
-      file: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='480px' height='360px'><path fill='#ffffff' d='M 0 0 L 480 0 L 480 360 L 0 360 Z' /></svg>",
-      bitmapResolution: 1,
-      rotationCenterX: 240,
-      rotationCenterY: 180,
-      _thumbnail: Future.withResult(new Thumbnail(480, 360, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAA6ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgICAgICAgICAgeG1sbnM6ZXhpZj0iaHR0cDovL25zLmFkb2JlLmNvbS9leGlmLzEuMC8iPgogICAgICAgICA8eG1wOk1vZGlmeURhdGU+MjAxNi0wMS0yNVQyMTowMToyMjwveG1wOk1vZGlmeURhdGU+CiAgICAgICAgIDx4bXA6Q3JlYXRvclRvb2w+UGl4ZWxtYXRvciAzLjQuMjwveG1wOkNyZWF0b3JUb29sPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpDb21wcmVzc2lvbj41PC90aWZmOkNvbXByZXNzaW9uPgogICAgICAgICA8dGlmZjpSZXNvbHV0aW9uVW5pdD4yPC90aWZmOlJlc29sdXRpb25Vbml0PgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzI8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWERpbWVuc2lvbj40PC9leGlmOlBpeGVsWERpbWVuc2lvbj4KICAgICAgICAgPGV4aWY6Q29sb3JTcGFjZT4xPC9leGlmOkNvbG9yU3BhY2U+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4zPC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+Ci3MB8YAAAAVSURBVAgdY/z//z8DDDDBGCAahQMAby0DAwzQlZYAAAAASUVORK5CYII=")),
-    })
+  toJSON(ctx) {
+    const json = super.toJSON(ctx)
+    const id = json.soundID = ctx.highestSoundId++
+    const name = id + '.wav'
+    this._file.then(blob => ctx.zip.file(name, blob))
+    return json
   }
 
-  static defaultCostume() {
-    Sprite.TURTLE = new Costume({
-      name: 'turtle',
-      ext: 'svg',
-      file: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='25px' height='20px'><path style='fill:#007de0;stroke:#033042;stroke-width:1;stroke-linejoin:round;' d='M 0,0 20,8 0,16 6,8 Z' /></svg>",
-      bitmapResolution: 1,
-      rotationCenterX: 8,
-      rotationCenterY: 8,
-      _thumbnail: Future.withResult(new Thumbnail(25, 20, "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAUCAYAAAB4d5a9AAABTElEQVQ4T2NkMnT5xcDI/JWBmWXmvy+fJjJcP/ycgcqAkckiIPM/n3wbg4AiB+P9Pf8ZGRhP//31uZvh4oEt1LKLEWQQo0XQRga1ANf/8nacDC8vMjDd3fmR4f3d/9TyHdgSEGAy8Xr9z75JhIFLBCLw4wMD48MDP6jhO7glDIZO8kysvFf+uU/kwQgmCn2HsATkG1D8CKq2/DfJFsIaH2T6DsUSjPjBF/Mk+A7DEqzxg88yJN/9//fn3v+zO3TQlVPHkgf7fzI+2PuP4d/fe//ObidsCTg5qwe4/Jez48KbTyDB9Ynhw91/DEz4MzJmxAuotvw3xRPxUFeTkmlJScJEuRqb7/FnRjJcjdMSlHggIayJLdsgBSQvqIBU4ASlEFLCmnhLQEU9E/NXQimEWAOxB5e+gw81i3W8EU+JSwnpxZrjCWkiVZ4ulgAAfsb6FdvZrw8AAAAASUVORK5CYII=")),
-    })
+  get name() { return this.soundName }
+  set name(v) { this.soundName = v }
+}
+Sound._property('soundName')
+Sound.dataProperties.push('md5')
+Sound.dataProperties.push('sampleCount')
+Sound.dataProperties.push('rate')
+Sound.dataProperties.push('format')
+
+
+// P.IO.parseJSONish
+const parseJSONish = function(json) {
+  if (!/^\s*\{/.test(json)) throw new SyntaxError('Bad JSON');
+  try {
+    return JSON.parse(json);
+  } catch (e) {}
+  if (/[^,:{}\[\]0-9\.\-+EINaefilnr-uy \n\r\t]/.test(json.replace(/"(\\.|[^"\\])*"/g, ''))) {
+    throw new SyntaxError('Bad JSON');
   }
+  return (1, eval)('(' + json + ')');
 }
 
 
-class Thumbnail {
-  constructor(width, height, src) {
-    this.width = width
-    this.height = height
-    this.src = src
+class Project {
+  static create() {
+    return new Stage({
+      costumes: [], // TODO Costume.defaultBackdrop()],
+    })
   }
 
-  static getImageSrc(ext, binary, cb) {
-    if (ext === 'jpg') ext = 'jpeg'
-    if (ext === 'svg') {
-      var canvas = el('canvas')
-      canvg(canvas, binary, {
-      renderCallback: function() {
-        cb(canvas.toDataURL('image/png'))
-      }})
-    } else {
-      cb('data:image/' + ext + ';base64,' + btoa(binary))
+  static load(zip) {
+    var zip = zip
+    return zip.file('project.json').async('string').then(text => {
+      const json = parseJSONish(text)
+      console.log(json)
+      const stage = new Stage(json, {zip})
+      return stage
+    })
+  }
+
+  static save(stage) {
+    const ctx = {
+      zip: new JSZip(),
+      highestCostumeId: 0,
+      highestSoundId: 0,
     }
-  }
-
-  static fromFile(ext, binary) {
-    return new Future(resolve => {
-      this.getImageSrc(ext, binary).then(src => {
-        var image = new Image
-
-        image.src = src
-        image.addEventListener('load', poll)
-        poll()
-
-        var timeout
-        function poll() {
-          if (image.naturalWidth) {
-            clearTimeout(timeout)
-            resolve(new Thumbnail(width, height, src))
-          } else {
-            timeout = setTimeout(poll, 100)
-          }
-        }
-      })
-    })
+    const json = stage.toJSON(ctx)
+    console.log(json)
+    const zip = ctx.zip
+    zip.file('project.json', JSON.stringify(json, null, '  '))
+    return zip
   }
 }
 
-*/
+module.exports = {Project, Sprite}
 
-
-const blank = {
-	"objName": "Stage",
-	"costumes": [{
-			"costumeName": "backdrop1",
-			"baseLayerID": 2,
-			"baseLayerMD5": "b61b1077b0ea1931abee9dbbfa7903ff.png",
-			"bitmapResolution": 2,
-			"rotationCenterX": 480,
-			"rotationCenterY": 360
-		}],
-	"currentCostumeIndex": 0,
-	"penLayerMD5": "5c81a336fab8be57adc039a8a2b33ca9.png",
-	"penLayerID": 0,
-	"tempoBPM": 60,
-	"videoAlpha": 0.5,
-	"children": [{
-			"objName": "Sprite1",
-			"costumes": [{
-					"costumeName": "turtle",
-					"baseLayerID": 1,
-					"baseLayerMD5": "4c8c8b562674f070b5a87b91d58d6e39.svg",
-					"bitmapResolution": 1,
-					"rotationCenterX": 2,
-					"rotationCenterY": 0
-				}],
-			"currentCostumeIndex": 0,
-			"scratchX": 0,
-			"scratchY": 0,
-			"scale": 1,
-			"direction": 90,
-			"rotationStyle": "normal",
-			"isDraggable": false,
-			"indexInLibrary": 1,
-			"visible": true,
-			"spriteInfo": {
-			}
-		}],
-	"info": {
-		"swfVersion": "v436",
-		"spriteCount": 1,
-		"flashVersion": "MAC 17,0,0,188",
-		"videoOn": false,
-		"scriptCount": 0
-	}
-}
-
-//const project = new Stage(blank)
-
-module.exports = {Sprite}
