@@ -1,9 +1,9 @@
-
-const V2Model = require('v2/model/model')
+'use strict'
+const Model = require('v2/model/model')
 const List = require('v2/model/list')
 
 
-class Model extends V2Model {
+class ToshModel extends Model {
   constructor(ctx) {
     super()
     this.ctx = ctx
@@ -12,14 +12,11 @@ class Model extends V2Model {
   toJSON(ctx) {
     const o = {}
     for (const k of this.dataProperties) {
-    //for (const k of Object.getOwnPropertyNames(this)) {
       if (k[0] === '_') continue
-      const v = this[k]
-      if (v instanceof List) {
-        o[k] = v.data.map(c => c.toJSON ? c.toJSON(ctx) : c)
-      } else {
-        o[k] = v.toJSON ? v.toJSON(ctx) : v
-      }
+      var v = this[k]
+      if (v instanceof List) v = v.data
+      if (Array.isArray(v)) v = v.map(c => c.toJSON ? c.toJSON(ctx) : c)
+      o[k] = v && v.toJSON ? v.toJSON(ctx) : v
     }
     return o
   }
@@ -31,7 +28,7 @@ class Model extends V2Model {
 }
 
 
-class Scriptable extends Model {
+class Scriptable extends ToshModel {
   constructor(ctx) {
     super(ctx)
     this.scripts = []
@@ -65,8 +62,8 @@ class Stage extends Scriptable {
     super(ctx)
     this.objName = 'Stage'
     this._children = new List
-    this._sprites = new List
-    // TODO listen for sprite modifications & update children accordingly
+    this.sprites = new List
+    this.bindChildren()
 
     this.penLayerMD5 = '5c81a336fab8be57adc039a8a2b33ca9.png'
     this.penLayerID = 0
@@ -81,17 +78,37 @@ class Stage extends Scriptable {
   toJSON(ctx) {
     const json = super.toJSON(ctx)
     json.info.spriteCount = this.sprites.length
-    json.info.scriptCount = [this].concat(this.sprites.data).map(s => s.scripts.length).reduce((a, b) => a + b, 0)
-    delete json.info.swfVersion
-    delete json.info.flashVersion
+    json.info.scriptCount = this.scriptCount
+    //delete json.info.swfVersion
+    //delete json.info.flashVersion
     return json
+  }
+  get scriptCount() {
+    var count = 0
+    count += this.scripts.length
+    for (const sprite of this.sprites) {
+      count += sprite.scripts.length
+    }
+    return count
   }
 
   get children() { return this._children }
-  set children(xs) { this._children.data = xs }
-
-  get sprites() { return this._sprites }
-  set sprites(xs) { this._sprites.data = xs.map(o => new Sprite(o, this.ctx)) }
+  set children(xs) {
+    const children = xs.slice()
+    this._children.data = children
+    let sprites = []
+    for (var i=0; i<children.length; i++) {
+      const o = children[i]
+      if (o.objName) {
+        sprites.push(children[i] = new Sprite(o, this.ctx))
+      }
+    }
+    sprites.sort((a, b) => a.indexInLibrary - b.indexInLibrary)
+    this.sprites.data = sprites
+  }
+  bindChildren() {
+    // TODO listen for sprite modifications & update children accordingly
+  }
 
   get costumes() { return this._costumes }
   set costumes(xs) { this._costumes.data = xs.map(o => new Costume(o, this.ctx)) }
@@ -99,8 +116,8 @@ class Stage extends Scriptable {
   get sounds() { return this._sounds }
   set sounds(xs) { this._sounds.data = xs.map(o => new Sound(o, this.ctx)) }
 }
+Stage.prototype.dataProperties = Scriptable.prototype.dataProperties.slice()
 Stage.prototype.dataProperties.push('children')
-Stage.prototype.dataProperties.push('sprites')
 Stage.prototype.dataProperties.push('penLayerMD5')
 Stage.prototype.dataProperties.push('penLayerID')
 Stage.prototype.dataProperties.push('tempoBPM')
@@ -124,6 +141,12 @@ class Sprite extends Scriptable {
   }
   get isStage() { return false }
 
+  toJSON(ctx) {
+    return Object.assign(super.toJSON(ctx), {
+      indexInLibrary: ctx.sprites.indexOf(this) + 1,
+    })
+  }
+
   static create() {
     const turtle = new Sprite
     // TODO turtle.costumes.add
@@ -136,9 +159,19 @@ class Sprite extends Scriptable {
   get sounds() { return this._sounds }
   set sounds(xs) { this._sounds.data = xs.map(o => new Sound(o, this.ctx)) }
 }
+Sprite.prototype.dataProperties = Scriptable.prototype.dataProperties.slice()
+Sprite.prototype.dataProperties.push('scratchX')
+Sprite.prototype.dataProperties.push('scratchY')
+Sprite.prototype.dataProperties.push('scale')
+Sprite.prototype.dataProperties.push('direction')
+Sprite.prototype.dataProperties.push('rotationStyle')
+Sprite.prototype.dataProperties.push('isDraggable')
+Sprite.prototype.dataProperties.push('visible')
+Sprite.prototype.dataProperties.push('spriteInfo')
+Sprite.prototype.dataProperties.push('indexInLibrary')
 
 
-class Costume extends Model {
+class Costume extends ToshModel {
   constructor(o, ctx) {
     super(ctx)
     // this.costumeName
@@ -148,6 +181,7 @@ class Costume extends Model {
     this.rotationCenterY = 0
     this._ext = o && o.baseLayerMD5.split('.').pop()
     this.init(o)
+    delete this.baseLayerID
   }
   set baseLayerID(id) {
     const zip = this.ctx.zip
@@ -159,16 +193,17 @@ class Costume extends Model {
     if (!f) { ext = 'svg'; f = zip.file(root + ext) }
     if (!f) throw new Error("Couldn't find image: " + root + ext)
     this._ext = ext
-    this._file = f.async('blob') // Promise
-    // this._thumbnail = this._file.then(makeThumbnail)
+    this.ctx.promises.push(f.async('blob').then(blob => {
+      this._blob = blob
+    }))
+    // this._thumbnail = this._blob.then(makeThumbnail)
   }
 
   toJSON(ctx) {
-    console.log(this.name)
     const json = super.toJSON(ctx)
     const id = json.baseLayerID = ctx.highestCostumeId++
     const name = id + '.' + this._ext
-    this._file.then(blob => ctx.zip.file(name, blob))
+    ctx.zip.file(name, this._blob)
     return json
   }
 
@@ -182,7 +217,7 @@ Costume.dataProperties.push('rotationCenterX')
 Costume.dataProperties.push('rotationCenterY')
 
 
-class Sound extends Model {
+class Sound extends ToshModel {
   constructor(o, ctx) {
     super(ctx)
     // this.soundName
@@ -196,14 +231,16 @@ class Sound extends Model {
     const zip = this.ctx.zip
     const f = zip.file(id + '.wav')
     if (!f) throw new Error("Couldn't find sound: " + root + ext)
-    this._file = f.async('blob') // Promise
+    this.ctx.promises.push(f.async('blob').then(blob => {
+      this._blob = blob
+    }))
   }
 
   toJSON(ctx) {
     const json = super.toJSON(ctx)
     const id = json.soundID = ctx.highestSoundId++
     const name = id + '.wav'
-    this._file.then(blob => ctx.zip.file(name, blob))
+    ctx.zip.file(name, this._blob)
     return json
   }
 
@@ -241,20 +278,23 @@ class Project {
     var zip = zip
     return zip.file('project.json').async('string').then(text => {
       const json = parseJSONish(text)
-      console.log(json)
-      const stage = new Stage(json, {zip})
-      return stage
+      const ctx = {zip, promises: []}
+      const stage = new Stage(json, ctx)
+      return Promise.all(ctx.promises).then(() => {
+        return stage
+      })
     })
   }
 
   static save(stage) {
     const ctx = {
       zip: new JSZip(),
+      sprites: stage.sprites.data,
       highestCostumeId: 0,
       highestSoundId: 0,
     }
     const json = stage.toJSON(ctx)
-    console.log(json)
+    //console.log(json)
     const zip = ctx.zip
     zip.file('project.json', JSON.stringify(json, null, '  '))
     return zip

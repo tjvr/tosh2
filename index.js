@@ -1,4 +1,4 @@
-
+'use strict'
 const itt = require('itt')
 
 require('v2/polyfill-pad')
@@ -36,7 +36,7 @@ class ToshApp extends App {
       .then(stage => {
         this.project = stage
         console.log(stage)
-        this.saveProject()
+        setTimeout(() => this.saveProject())
       })
     })
   }
