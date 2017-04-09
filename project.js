@@ -76,6 +76,13 @@ class Stage extends Scriptable {
   }
   get isStage() { return true }
 
+  static create() {
+    const stage = new Stage
+    stage.costumes.push(Costume.defaultBackdrop())
+    stage.sprites.push(Sprite.create())
+    return stage
+  }
+
   toJSON(ctx) {
     const json = super.toJSON(ctx)
     json.info.spriteCount = this.sprites.length
@@ -150,7 +157,7 @@ class Sprite extends Scriptable {
 
   static create() {
     const turtle = new Sprite
-    // TODO turtle.costumes.add
+    turtle.costumes.push(Costume.defaultCostume())
     return turtle
   }
 
@@ -180,9 +187,12 @@ class Costume extends ToshModel {
     this.bitmapResolution = 1
     this.rotationCenterX = 0
     this.rotationCenterY = 0
-    this._ext = o && o.baseLayerMD5.split('.').pop()
+    this._ext = o && o.baseLayerMD5 && o.baseLayerMD5.split('.').pop()
     this.init(o)
     delete this.baseLayerID
+    if (this._file && !this._thumbnail) {
+      this._thumbnail = Thumbnail.fromFile(this._ext, this._file)
+    }
   }
   set baseLayerID(id) {
     const zip = this.ctx.zip
@@ -194,17 +204,20 @@ class Costume extends ToshModel {
     if (!f) { ext = 'svg'; f = zip.file(root + ext) }
     if (!f) throw new Error("Couldn't find image: " + root + ext)
     this._ext = ext
-    this.ctx.promises.push(f.async('blob').then(blob => {
-      this._blob = blob
-    }))
-    // this._thumbnail = this._blob.then(makeThumbnail)
+    const filePromise = f.async(ext === 'svg' ? 'text' : 'blob').then(blob => {
+      this._file = blob
+    })
+    this.ctx.promises.push(filePromise)
+    this._thumbnail = filePromise.then(() => {
+      return Thumbnail.fromFile(this._ext, this._file)
+    })
   }
 
   toJSON(ctx) {
     const json = super.toJSON(ctx)
     const id = json.baseLayerID = ctx.highestCostumeId++
     const name = id + '.' + this._ext
-    ctx.zip.file(name, this._blob)
+    ctx.zip.file(name, this._file)
     return json
   }
 
@@ -270,9 +283,7 @@ const parseJSONish = function(json) {
 
 class Project {
   static create() {
-    return new Stage({
-      costumes: [], // TODO Costume.defaultBackdrop()],
-    })
+    return Stage.create()
   }
 
   static load(zip) {
@@ -301,6 +312,58 @@ class Project {
     return zip
   }
 }
+
+class Thumbnail {
+  constructor(image) {
+    this.src = image.src
+    this.width = image.naturalWidth
+    this.height = image.naturalHeight
+  }
+
+  static blobURL(ext, blob) {
+    return ext === 'svg' ? 'data:image/svg+xml;utf8,' + blob.replace(
+      /[#]/g, encodeURIComponent
+    ) : URL.createObjectURL(blob)
+  }
+
+  static fromFile(ext, blob) {
+    if (!blob) throw new Error('no blob')
+    return new Promise((resolve, reject) => {
+      const image = new Image
+      if (ext === 'jpg') ext = 'jpeg'
+      image.src = this.blobURL(ext, blob)
+      image.addEventListener('load', poll)
+
+      var timeout
+      function poll() {
+        if (image.naturalWidth) {
+          clearTimeout(timeout)
+          resolve(new Thumbnail(image))
+        } else {
+          timeout = setTimeout(poll, 100)
+        }
+      }
+    })
+  }
+}
+
+Costume.defaultBackdrop = () => new Costume({
+  name: 'backdrop1',
+  _ext: 'svg',
+  _file: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='480px' height='360px'><path fill='#ffffff' d='M 0 0 L 480 0 L 480 360 L 0 360 Z' /></svg>",
+  bitmapResolution: 1,
+  rotationCenterX: 240,
+  rotationCenterY: 180,
+})
+
+Costume.defaultCostume = () => new Costume({
+  name: 'turtle',
+  _ext: 'svg',
+  _file: "<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='25px' height='20px'><path style='fill:#007de0;stroke:#033042;stroke-width:1;stroke-linejoin:round;' d='M 0,0 20,8 0,16 6,8 Z' /></svg>",
+  bitmapResolution: 1,
+  rotationCenterX: 8,
+  rotationCenterY: 8,
+})
 
 module.exports = {Project, Sprite}
 

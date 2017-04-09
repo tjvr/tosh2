@@ -41,11 +41,17 @@ class SpriteItem extends Collection.Item {
   build() {
     return h('.sprite-icon.v2-collection-item', [
       this.nameEl = h('.name'),
+      this.thumbEl = h('.thumb'),
     ])
   }
 
   _update() {
-    this.nameEl.textContent = this.model.name
+    const sprite = this.model
+    this.nameEl.textContent = sprite.name
+    const costume = sprite.costumes.get(sprite.currentCostumeIndex)
+    costume._thumbnail.then(thumb => {
+      this.thumbEl.style.backgroundImage = 'url(' + JSON.stringify(thumb.src) + ')'
+    })
   }
 }
 SpriteItem.prototype.keyBindings = []

@@ -270,78 +270,30 @@ body {
 }
 .sprite-icon > .name {
   position: absolute;
-  bottom: 4px;
   text-align: center;
-  left: 4px;
-  right: 4px;
+  bottom: 4px; left: 4px; right: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .sprite-icon.v2-collection-item--selected > .name {
   bottom: 2px;
 }
+.sprite-icon.v2-collection-item--selected > .thumb {
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 20px;
+}
+.sprite-icon > .thumb {
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 22px;
+  background-position: center center;
+}
 
 
 .ss .switcher {
   top: 220px;
   width: 242px;
-}
-
-.sprite {
-  padding: 0 8px;
-  line-height: 24px;
-  background: #fff;
-  cursor: pointer;
-  height: 24px;
-  position: relative;
-}
-.sprite-active {
-  background: #0669d9;
-  color: #fff;
-}
-.sprite-new {
-  background: #eee; /* cf. costume-new */
-  color: #888;
-}
-
-.sprite .thumb {
-  width: 24px;
-  height: 18px;
-  float: left;
-  margin-top: 3px;
-}
-
-.sprite .name-wrap {
-  position: absolute;
-  left: 34px;
-  right: 80px;
-  top: 1px;
-  bottom: 1px;
-}
-.sprite .name {
-  text-overflow: ellipsis;
-  padding: 0 6px;
-  width: 100%;
-  height: 22px;
-}
-.sprite .name[readonly] {
-  cursor: inherit;
-}
-.sprite .name-editing {
-  background: #fff;
-  color: #000;
-}
-
-.sprite .buttons {
-  position: absolute;
-  top: 0;
-  right: 4px;
-  visibility: hidden;
-  background: inherit;
-  z-index: 1;
-}
-.sprite:hover .buttons {
-  visibility: visible;
 }
 
 .icon-error { /* cf .button */
