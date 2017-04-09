@@ -1,6 +1,4 @@
 'use strict'
-const itt = require('itt')
-
 require('v2/polyfill-pad')
 //const bind = require('v2/bind')
 //const emitter = require('v2/emitter')

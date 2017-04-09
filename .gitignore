@@ -1,3 +1,4 @@
 node_modules/
 app/parcel.js*
 bundle.js
+build/
