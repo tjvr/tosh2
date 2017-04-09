@@ -82,6 +82,14 @@ class ToshApp extends App {
     })
   }
 
+  flagClick() {
+    // TODO
+  }
+
+  leavePlayer() {
+    // TODO
+  }
+
   openHelp() {
     openInTab('/help/')
   }
@@ -99,13 +107,20 @@ um.watch(app.model)
 
 const undoItem = new MenuBar.Item({title: 'Undo', action: 'undo', key: '#z'})
 const redoItem = new MenuBar.Item({title: 'Redo', action: 'redo', key: rt.isMac ? '^#z' : '#y'})
+const runItem = new MenuBar.Item({title: 'Run', action: 'flagClick', key: '#Enter'})
+const stopItem = new MenuBar.Item({title: 'Stop', action: 'leavePlayer', key: 'Escape'})
 
+// TODO listen for event on UndoManager
 setInterval(() => {
   undoItem.title = um.canUndo ? `Undo ${itt.last(um._past).name}` : 'Undo'
   undoItem.enabled = um.canUndo
   redoItem.title = um.canRedo ? `Redo ${itt.last(um._future).name}` : 'Redo'
   redoItem.enabled = um.canRedo
 }, 100)
+
+// TODO set enabled on run/stop
+runItem.enabled = false
+stopItem.enabled = false
 
 const mb = new MenuBar({
   target: app,
@@ -119,6 +134,10 @@ const mb = new MenuBar({
     ['Edit', [
       undoItem,
       redoItem,
+    ]],
+    ['Project', [
+      runItem,
+      stopItem,
     ]],
     ['Help', [
       ['Guide', () => openInTab('/help/guide/')],
@@ -168,3 +187,4 @@ spriteList.model = app.model.project.sprites
 app.model.on('project change', e => {
   spriteList.model = app.model.project.sprites
 })
+
