@@ -22,7 +22,7 @@ class Editor extends View {
   constructor() {
     super()
     this._model = null
-    this._reflow = this._reflow.bind(this)
+    this._layout = this._layout.bind(this)
     this._changed = this._changed.bind(this)
     this.cm = CodeMirror(this.el, this.cmOptions)
   }
@@ -30,7 +30,7 @@ class Editor extends View {
   dblclick() {}
 
   build() {
-    return h('.v2-view.editor')
+    return h('.v2-view.tosh-editor')
   }
 
   get model() {return this._model}
@@ -40,11 +40,11 @@ class Editor extends View {
     this._model = value
     if (this.isLive) {
       if (this._model) this._listen()
-      this._reflow()
+      this._layout()
     }
   }
   _onActivate() {
-    this.resize()
+    setTimeout(this._layout)
     if (this._model) this._listen()
   }
   _onDeactivate() {
@@ -58,15 +58,19 @@ class Editor extends View {
   _changed() {
   }
 
-  resize() { this._reflow() }
-  _reflow() {
-    // fix layout
-    this.cm.setSize(NaN, this.el.clientHeight);
+  resize() { this._layout() }
+  _layout() {
+    // set container size
+    const bb = this.el.parentNode.getBoundingClientRect()
+    this.el.style.width = bb.width + 'px'
 
-    // make sure scrollbar has width (cm.display.barWidth)
-    // otherwise annotations won't appear!
-    this.cm.setOption('scrollbarStyle', 'native');
-    this.cm.setOption('scrollbarStyle', this.cmOptions.scrollbarStyle);
+    // fix layotu
+    this.cm.refresh()
+
+    // // make sure scrollbar has width (cm.display.barWidth)
+    // // otherwise annotations won't appear!
+    // this.cm.setOption('scrollbarStyle', 'native');
+    // this.cm.setOption('scrollbarStyle', this.cmOptions.scrollbarStyle);
   }
 
   // activate / deactivate?

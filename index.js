@@ -88,7 +88,6 @@ class ToshApp extends App {
 }
 
 const spriteList = new SpriteList
-window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
 const app = window.app = new ToshApp
 app.mount(document.body)
@@ -139,6 +138,9 @@ app.add(mb)
 class ToshSplit extends Split {
   _layout() {
     super._layout()
+    this.resizeChildren()
+  }
+  resizeChildren() {
     for (const pane of this.panes) {
       pane.resize()
     }
@@ -159,7 +161,8 @@ split.addPane(right)
 app.add(split)
 
 right.resize()
-window.addEventListener('resize', right.resize.bind(right))
+window.addEventListener('resize', split.resizeChildren.bind(split))
+window.addEventListener('resize', debounce(5, () => spriteList.resize.bind(spriteList)))
 
 //bind(spriteList, 'model', app.model, 'project.sprites')
 spriteList.model = app.model.project.sprites
