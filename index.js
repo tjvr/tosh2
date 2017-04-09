@@ -2,7 +2,7 @@
 const itt = require('itt')
 
 require('v2/polyfill-pad')
-const bind = require('v2/bind')
+//const bind = require('v2/bind')
 //const emitter = require('v2/emitter')
 //const {key, modifiers} = require('v2/format')
 const fs = require('v2/fs') // {zip}
@@ -19,6 +19,7 @@ const MenuBar = require('v2/view/menu-bar')
 
 const {Project} = require('./project')
 const {SpriteList} = require('./views')
+const Editor = require('./editor')
 
 
 class ToshApp extends App {
@@ -111,6 +112,9 @@ app.keyBindings.push({
 app.add(mb)
 
 app.add(spriteList)
+
+let editor = new Editor
+app.add(editor)
 
 // TODO Split
 
