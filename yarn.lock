@@ -2416,9 +2416,9 @@ portfinder@0.4.x:
     async "0.9.0"
     mkdirp "0.5.x"
 
-"prcl@git://github.com/tjvr/parcel#watch":
-  version "0.3.0"
-  resolved "git://github.com/tjvr/parcel#a1f09d72e23d09b8fc7aaf52fddf200d33946f61"
+prcl@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/prcl/-/prcl-0.4.0.tgz#115e8c07ca6cc4263255e54a6a0ccdbcde36d72d"
 
 prelude-ls@~1.1.2:
   version "1.1.2"

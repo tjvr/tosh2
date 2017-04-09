@@ -22,7 +22,7 @@
     "babel-preset-es2015": "^6.24.1",
     "http-server": "^0.9.0",
     "jest": "^19.0.2",
-    "prcl": "git://github.com/tjvr/parcel#watch",
+    "prcl": "^0.4.0",
     "webpack": "^2.3.3"
   }
 }
