@@ -1,6 +1,7 @@
 'use strict'
 const itt = require('itt')
 
+const bind = require('v2/bind')
 const fs = require('v2/fs') // {zip}
 const h = require('v2/h')
 const path = require('v2/path') // {basename, ext}
@@ -84,12 +85,6 @@ class ToshApp extends App {
   openHelp() {
     openInTab('/help/')
   }
-
-  get project() { return this._project }
-  set project(stage) {
-    this._project = stage
-    spriteList.model = stage.sprites
-  }
 }
 
 const spriteList = new SpriteList
@@ -166,3 +161,8 @@ app.add(split)
 right.resize()
 window.addEventListener('resize', right.resize.bind(right))
 
+//bind(spriteList, 'model', app.model, 'project.sprites')
+spriteList.model = app.model.project.sprites
+app.model.on('project change', e => {
+  spriteList.model = app.model.project.sprites
+})
