@@ -35,6 +35,21 @@ class SpriteList extends Collection {
     el.classList.add('tosh-sprites')
     return el
   }
+
+  selectRange(i, j, add) {
+    for (const k of this._selection) {
+      const item = this.itemAtIndex(k)
+      if (item) item.selected = false
+    }
+    this._selection.clear()
+    this._selection.add(i)
+    const item = this.itemAtIndex(i)
+    if (item) item.selected = true
+    return this
+  }
+  clearSelection() {
+    return this
+  }
 }
 
 class SpriteItem extends Collection.Item {
