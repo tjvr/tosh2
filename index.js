@@ -11,7 +11,7 @@ const {debounce, toJSON, ucfirst, wrapBlob} = require('v2/util')
 
 const Model = require('v2/model/model')
 const App = require('v2/view/app')
-const Menu= require('v2/view/menu')
+const Menu = require('v2/view/menu')
 const MenuBar = require('v2/view/menu-bar')
 const Split = require('v2/view/split')
 const UndoManager = require('v2/undo-manager')
@@ -32,8 +32,8 @@ function open(url) {
   window.location.href = url
 }
 function openInTab(url) {
-  // TODO avoid pop-up blocker
-  h('a', {href: url, target: '_blank'}).click()
+  // TODO avoid Firefox pop-up blocker
+  h('a', {href: url, target: '_blank', rel: 'noopener'}).click()
 }
 function *globalBindings(m) {
   if (!m) return
