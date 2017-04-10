@@ -3012,9 +3012,9 @@ uuid@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
 
-"v2@git://github.com/nathan/v2.git#a605baa":
+"v2@git://github.com/nathan/v2.git#03984d2":
   version "0.0.1"
-  resolved "git://github.com/nathan/v2.git#a605baa"
+  resolved "git://github.com/nathan/v2.git#03984d2"
   dependencies:
     itt "^0.2.1"
 
