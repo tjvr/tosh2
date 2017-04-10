@@ -15,11 +15,11 @@ class RightLayout extends View {
     this.children[0].size = {w: 0, h: 0}
     this._bb = this.el.getBoundingClientRect()
     const w = this._bb.width
-    const h = w / 480 * 360
+    const h = w / 482 * 362
     this.children[0].size = {w, h}
     // adjust height of sprite list
 
-    this.children[1].el.style.top = h + 'px'
+    this.children[1].el.style.top = (h + 30) + 'px'
     this.children[1].resize()
   }
 }

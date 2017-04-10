@@ -1,4 +1,5 @@
 node_modules/
-app/parcel.js*
+app/parcel.js
+app/parcel.js.map
 bundle.js
 build/

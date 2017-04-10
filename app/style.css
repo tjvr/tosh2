@@ -63,10 +63,10 @@ body {
 
 .v2-split {
   position: absolute;
-  top: 30px;
-  left: 4px;
-  right: 4px;
-  bottom: 4px;
+  top: 26px;
+  left: 0;
+  right: 6px;
+  bottom: 0;
 }
 
 .ss {
@@ -102,12 +102,16 @@ body {
   height: 392px;
   font-size: 16px;
 }
-.tosh-player {
-  border: 1px solid blue; /* DEBUG */
+
+.tosh-preview {
   display: block;
   flex: none;
   position: absolute;
 
+}
+.player {
+  margin: 1px;
+  box-shadow: 0 0 0 1px #999;
   background: #fff;
   overflow: hidden;
 }
@@ -126,12 +130,8 @@ body {
 }
 
 
-#phosphorus * {
+.tosh-preview * {
   box-sizing: content-box;
-}
-
-.player {
-  box-shadow: 0 0 0 1px #999;
 }
 
 .controls {
@@ -253,7 +253,7 @@ body {
   background: #f7f7f7; /* cf. CodeMirror-gutters */
   bottom: 0;
   overflow: scroll;
-  margin-top: 4px;
+  margin-top: 8px;
   left: 0;
   right: 0;
   bottom: 0;

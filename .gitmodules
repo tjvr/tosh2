@@ -1,0 +1,3 @@
+[submodule "phosphorus"]
+	path = phosphorus
+	url = git@github.com:nathan/phosphorus
