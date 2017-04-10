@@ -183,8 +183,11 @@ right.resize()
 window.addEventListener('resize', split.resizeChildren.bind(split))
 
 //bind(spriteList, 'model', app.model, 'project.sprites')
-spriteList.model = app.model.project.sprites
 app.model.on('project change', e => {
+  spriteList.model = app.model.project.sprites
+})
+// TODO why is setTimeout needed
+setTimeout(() => {
   spriteList.model = app.model.project.sprites
 })
 

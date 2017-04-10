@@ -30,6 +30,13 @@ class SpriteList extends Collection {
     this.setTileSize(96, 96)
   }
 
+  get model() {return super.model}
+  set model(value) {
+    super.model = value
+    const index = value.length > 1 ? 1 : 0
+    this.selectRange(index, index, true)
+  }
+
   build() {
     const el = super.build()
     el.classList.add('tosh-sprites')
