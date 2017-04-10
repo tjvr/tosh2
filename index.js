@@ -120,7 +120,7 @@ spriteList.on('selection change', e => {
 const mb = new MenuBar({
   target: app,
   spec: [
-    ['Tosh', () => open('/')],
+    ['tosh', () => open('/')],
     ['File', [
       ['Open', 'openProject', {key: '#o'}],
       ['Import from Scratch…', 'importProject', {key: '#i', enabled: false}],
