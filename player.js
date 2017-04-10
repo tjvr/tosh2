@@ -8,6 +8,7 @@ class Player extends View {
 
   init() {
     this.stage = null
+    this.scale = 1
     this.isFullScreen = false
     this.flag.addEventListener('click', this.flagClick.bind(this))
     this.pause.addEventListener('click', this.pauseClick.bind(this))
@@ -45,6 +46,13 @@ class Player extends View {
   set size({w, h}) {
     this.player.style.width = w + 'px'
     this.player.style.height = h + 'px'
+    this.scale = w / 480
+    if (this.stage) {
+      this.stage.setZoom(this.scale)
+      if (!stage.isRunning) {
+        this.stage.draw()
+      }
+    }
   }
 
   turboClick() {
@@ -148,8 +156,7 @@ class Player extends View {
       document.body.style.marginTop = (window.innerHeight - h - padding) / 2 + 'px'
       this.stage.setZoom(w / 480)
     } else {
-      // TODO set zoom value
-      this.stage.setZoom(1)
+      this.stage.setZoom(this.scale)
       if (!stage.isRunning) {
         this.stage.draw()
       }
