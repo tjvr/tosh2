@@ -36,7 +36,7 @@ class Player extends View {
         this.pause = h('span.pause'),
         this.flag = h('span.flag', {title: "Shift+click to enable turbo mode."}),
         this.turbo = h('.turbo'),
-        this.smallStageBtn = h('span.small-stage.disabled'),
+        //this.smallStageBtn = h('span.small-stage.disabled'),
         this.fullScreen = h('span.full-screen'),
       ]),
       this.player = h('.player'),

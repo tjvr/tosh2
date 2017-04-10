@@ -9,6 +9,9 @@ class RightLayout extends View {
   init() {
     this._bb = null
   }
+  build() {
+    return h('.v2-view.tosh-player-wrap')
+  }
 
   resize() {
     // maintain player's 4:3 aspect ratio
