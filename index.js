@@ -22,6 +22,12 @@ const Editor = require('./editor')
 const Player = require('./player')
 
 
+// fix saveFile
+if (typeof window.requestIdleCallback !== 'function') {
+  window.requestIdleCallback = cb => setTimeout(cb, 300)
+}
+
+
 function open(url) {
   window.location.href = url
 }
@@ -84,8 +90,9 @@ class ToshApp extends App {
 
   saveProject() {
     const zip = Project.save(this.model.project)
-    zip.generateAsync({type: 'blob'}).then(blob => {
-      rt.saveFile(blob, this.model.name)
+    const blob = zip.generate({type: 'blob'})
+    rt.saveFile(blob, this.model.name, {
+      type: 'application/octet-stream',
     })
   }
 
