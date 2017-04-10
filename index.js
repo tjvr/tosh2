@@ -11,6 +11,7 @@ const {debounce, toJSON, ucfirst, wrapBlob} = require('v2/util')
 
 const Model = require('v2/model/model')
 const App = require('v2/view/app')
+const Menu= require('v2/view/menu')
 const MenuBar = require('v2/view/menu-bar')
 const Split = require('v2/view/split')
 const UndoManager = require('v2/undo-manager')
@@ -108,29 +109,13 @@ app.mount(document.body)
 const um = window.um = new UndoManager
 ToshApp.prototype.undo = um.undo.bind(um)
 ToshApp.prototype.redo = um.redo.bind(um)
-um.watch(app.model)
+um.watch(app.model, 'project')
+um.watch(app.model, 'name')
 
 const spriteList = new SpriteList
 spriteList.on('selection change', e => {
   app.model.active = e.value
 })
-
-const undoItem = new MenuBar.Item({title: 'Undo', action: 'undo', key: '#z'})
-const redoItem = new MenuBar.Item({title: 'Redo', action: 'redo', key: rt.isMac ? '^#z' : '#y'})
-const runItem = new MenuBar.Item({title: 'Run', action: 'flagClick', key: '#Enter'})
-const stopItem = new MenuBar.Item({title: 'Stop', action: 'leavePlayer', key: 'Escape'})
-
-// TODO listen for event on UndoManager
-setInterval(() => {
-  undoItem.title = um.canUndo ? `Undo ${itt.last(um._past).name}` : 'Undo'
-  undoItem.enabled = um.canUndo
-  redoItem.title = um.canRedo ? `Redo ${itt.last(um._future).name}` : 'Redo'
-  redoItem.enabled = um.canRedo
-}, 100)
-
-// TODO set enabled on run/stop
-runItem.enabled = false
-stopItem.enabled = false
 
 const mb = new MenuBar({
   target: app,
@@ -141,14 +126,14 @@ const mb = new MenuBar({
       ['Import from Scratch…', 'importProject', {key: '#i', enabled: false}],
       ['Save', 'saveProject', {key: '#s'}],
     ]],
-    ['Edit', [
-      undoItem,
-      redoItem,
-    ]],
-    ['Project', [
-      runItem,
-      stopItem,
-    ]],
+    ['Edit', {menu: () => new Menu({spec: [
+      [um.canUndo ? `Undo ${um.undoName}` : 'Undo', 'undo', {key: '#z', enabled: um.canUndo}],
+      [um.canRedo ? `Redo ${um.redoName}` : 'Redo', 'redo', {key: rt.isMac ? '^#Z' : '#y', enabled: um.canRedo}],
+    ]})}],
+    ['Project', {menu: () => new Menu({spec: [
+      ['Run', 'flagClick', {key: '#Enter', enabled: false}],
+      ['Stop', 'leavePlayer', {key: 'Escape', enabled: false}],
+    ]})}],
     ['Help', [
       ['Guide', () => openInTab('/help/guide/')],
       ['Tips', () => openInTab('/help/tips/')],
@@ -159,9 +144,14 @@ const mb = new MenuBar({
   ],
 })
 app.keyBindings = Array.from(globalBindings(mb))
-app.keyBindings.push({
-  key: 'F1', command: 'openHelp'
-})
+app.keyBindings = app.keyBindings.concat([
+  {key: 'F1', command: 'openHelp'},
+  {key: '#z', command: 'undo'},
+  {key: '^#Z', command: 'redo'},
+  {key: '#y', command: 'redo'},
+  {key: '#Enter', command: 'flagClick'},
+  {key: 'Escape', command: 'leavePlayer'},
+])
 app.add(mb)
 
 class ToshSplit extends Split {
