@@ -240,7 +240,7 @@ class Sound extends ToshModel {
     const zip = this.ctx.zip
     const f = zip.file(id + '.wav')
     if (!f) throw new Error("Couldn't find sound: " + root + ext)
-    this._file = f.asBinary() // ArrayBuffer
+    this._file = f.asArrayBuffer()
   }
 
   toJSON(ctx) {

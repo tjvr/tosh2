@@ -7,7 +7,7 @@ class Player extends View {
   /* originally based on nathan/phosphorus#b3ba0df */
 
   init() {
-    this._stage = null
+    this.stage = null
     this.isFullScreen = false
     this.flag.addEventListener('click', this.flagClick.bind(this))
     this.pause.addEventListener('click', this.pauseClick.bind(this))
@@ -27,10 +27,8 @@ class Player extends View {
     })
   }
 
-  get stage() { return this._stage }
-
   build() {
-    return h('.v2-view.tosh-preview', [
+    return h('.v2-view.tosh-preview', {id: 'phosphorus'}, [
       h('.controls', [
         h('.progress-bar'),
         this.stop = h('span.stop'),
@@ -115,7 +113,7 @@ class Player extends View {
         }
       }
     }
-    if (!isFullScreen) {
+    if (!this.isFullScreen) {
       document.body.style.width =
       document.body.style.height =
       document.body.style.marginLeft =
@@ -130,7 +128,7 @@ class Player extends View {
   }
 
   exitFullScreen(e) {
-    if (isFullScreen && e.keyCode === 27) {
+    if (this.isFullScreen && e.keyCode === 27) {
       this.fullScreenClick(e)
     }
   }
@@ -158,14 +156,53 @@ class Player extends View {
     }
   }
 
-  // TODO
-  loadProject(request, cb) {
-    var stage = this.stage
-    if (stage) {
-      // TODO is this duplicated in app.js?
-      stage.stopAll()
-      stage.pause()
+  sendProject(zip, project, start = true) {
+    if (this.stage) {
+      this.stage.stopAll()
+      this.stage.pause()
     }
+
+    // send phosphorus the zip object
+    const request = P.IO.loadSB2Project(zip)
+    if (request.isError) {
+      console.error(request.result)
+      return
+    }
+
+    /*
+    // save list of children, in case it changes _while the project is loading_
+    const children = project.children.slice()
+    */
+    this._loadProject(request, stage => {
+      stage.handleError = function(e) {
+        console.error(e.stack || e)
+      }
+
+      stage._tosh = project
+
+      /*
+      // sync() needs references to original scriptable
+      // phosphorus doesn't support list watchers
+      children = children.filter(function(obj) { return !!obj.objName; })
+      for (var i=0; i<stage.children.length; i++) {
+        var s = stage.children[i]
+        if (s.isSprite) {
+          s._tosh = children[i]
+        }
+      }
+      */
+
+      if (start) {
+        stage.focus()
+        stage.triggerGreenFlag()
+      }
+    })
+  }
+
+  // TODO sync
+
+  _loadProject(request, cb) {
+    var stage = this.stage
     while (this.player.firstChild) this.player.removeChild(this.player.lastChild)
     this.pause.className = 'pause'
 
@@ -176,7 +213,7 @@ class Player extends View {
       stage.isTurbo = isTurbo
       this.updateFullScreen()
 
-      stage.root.addEventListener('keydown', exitFullScreen)
+      stage.root.addEventListener('keydown', this.exitFullScreen.bind(this))
 
       this.player.appendChild(stage.root)
       if (cb) {

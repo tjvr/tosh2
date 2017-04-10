@@ -90,7 +90,9 @@ class ToshApp extends App {
   }
 
   flagClick() {
-    // TODO
+    // TODO compile
+    const zip = Project.save(this.model.project)
+    player.sendProject(zip)
   }
 
   leavePlayer() {
@@ -130,7 +132,7 @@ const mb = new MenuBar({
       [um.canRedo ? `Redo ${um.redoName}` : 'Redo', 'redo', {key: rt.isMac ? '^#Z' : '#y', enabled: um.canRedo}],
     ]})}],
     ['Project', {menu: () => new Menu({spec: [
-      ['Run', 'flagClick', {key: '#Enter', enabled: false}],
+      ['Run', 'flagClick', {key: '#Enter', enabled: true}],
       ['Stop', 'leavePlayer', {key: 'Escape', enabled: false}],
     ]})}],
     ['Help', [
