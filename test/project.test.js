@@ -1,6 +1,7 @@
 
 const fs = require('fs')
 const JSZip = global.JSZip = require('jszip')
+//require('../phosphorus/phosphorus.js')
 
 const {Project} = require('../project')
 
@@ -10,7 +11,8 @@ let readZip = function(name) {
   return new Promise((resolve, reject) => {
     fs.readFile(name, (err, data) => {
       if (err) reject(err)
-      JSZip.loadAsync(data).then(resolve)
+      const zip = new JSZip(data)
+      resolve(zip)
     })
   })
 }
@@ -24,8 +26,8 @@ describe('load/save', () => {
       .then(Project.save)
       .then(toshZip => {
         return Promise.all([
-          zip.file('project.json').async('string').then(JSON.parse),
-          toshZip.file('project.json').async('string').then(JSON.parse),
+          JSON.parse(zip.file('project.json').asText()),
+          JSON.parse(toshZip.file('project.json').asText()),
         ]).then(([json, toshJson]) => {
           expect(json).toEqual(toshJson)
         })

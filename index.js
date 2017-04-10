@@ -70,8 +70,7 @@ class ToshApp extends App {
   openProject() {
     rt.chooseFile('.sb2').then(file => {
       this.model.name = path.basename(file.name)
-      JSZip.loadAsync(file)
-      .then(Project.load)
+      Project.loadZipFile(file)
       .then(stage => {
         this.model.project = stage
         console.log(stage)

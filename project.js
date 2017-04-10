@@ -204,13 +204,8 @@ class Costume extends ToshModel {
     if (!f) { ext = 'svg'; f = zip.file(root + ext) }
     if (!f) throw new Error("Couldn't find image: " + root + ext)
     this._ext = ext
-    const filePromise = f.async(ext === 'svg' ? 'text' : 'blob').then(blob => {
-      this._file = blob
-    })
-    this.ctx.promises.push(filePromise)
-    this._thumbnail = filePromise.then(() => {
-      return Thumbnail.fromFile(this._ext, this._file)
-    })
+    this._file = ext === 'svg' ? f.asText() : f.asArrayBuffer()
+    this._thumbnail = Thumbnail.fromFile(this._ext, this._file) // Promise
   }
 
   toJSON(ctx) {
@@ -245,16 +240,14 @@ class Sound extends ToshModel {
     const zip = this.ctx.zip
     const f = zip.file(id + '.wav')
     if (!f) throw new Error("Couldn't find sound: " + root + ext)
-    this.ctx.promises.push(f.async('blob').then(blob => {
-      this._blob = blob
-    }))
+    this._file = f.asBinary() // ArrayBuffer
   }
 
   toJSON(ctx) {
     const json = super.toJSON(ctx)
     const id = json.soundID = ctx.highestSoundId++
     const name = id + '.wav'
-    ctx.zip.file(name, this._blob)
+    ctx.zip.file(name, this._file)
     return json
   }
 
@@ -268,33 +261,29 @@ Sound.dataProperties.push('rate')
 Sound.dataProperties.push('format')
 
 
-// P.IO.parseJSONish
-const parseJSONish = function(json) {
-  if (!/^\s*\{/.test(json)) throw new SyntaxError('Bad JSON');
-  try {
-    return JSON.parse(json);
-  } catch (e) {}
-  if (/[^,:{}\[\]0-9\.\-+EINaefilnr-uy \n\r\t]/.test(json.replace(/"(\\.|[^"\\])*"/g, ''))) {
-    throw new SyntaxError('Bad JSON');
-  }
-  return (1, eval)('(' + json + ')');
-}
-
-
 class Project {
   static create() {
     return Stage.create()
   }
 
+  static loadZipFile(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader
+      reader.onloadend = function() {
+        resolve(new JSZip(reader.result))
+      };
+      reader.readAsArrayBuffer(file)
+    }).then(this.load)
+  }
+
   static load(zip) {
     var zip = zip
-    return zip.file('project.json').async('string').then(text => {
-      const json = parseJSONish(text)
-      const ctx = {zip, promises: []}
-      const stage = new Stage(json, ctx)
-      return Promise.all(ctx.promises).then(() => {
-        return stage
-      })
+    const text = zip.file('project.json').asText()
+    const json = P.IO.parseJSONish(text)
+    const ctx = {zip, promises: []}
+    const stage = new Stage(json, ctx)
+    return Promise.all(ctx.promises).then(() => {
+      return stage
     })
   }
 
@@ -320,18 +309,23 @@ class Thumbnail {
     this.height = image.naturalHeight
   }
 
-  static blobURL(ext, blob) {
-    return ext === 'svg' ? 'data:image/svg+xml;utf8,' + blob.replace(
-      /[#]/g, encodeURIComponent
-    ) : URL.createObjectURL(blob)
+  static svgDataURI(text) {
+    // TODO consider using phosphorus's SVG fixes
+    return 'data:image/svg+xml;utf8,' + text.replace(/[#]/g, encodeURIComponent)
   }
 
-  static fromFile(ext, blob) {
-    if (!blob) throw new Error('no blob')
+  static fromFile(ext, ab) {
+    if (!ab) throw new Error('no blob')
     return new Promise((resolve, reject) => {
       const image = new Image
-      if (ext === 'jpg') ext = 'jpeg'
-      image.src = this.blobURL(ext, blob)
+      if (ext === 'svg') {
+        image.src = this.svgDataURI(ab)
+      } else {
+        if (!URL.createObjectURL) return // for tests
+        if (ext === 'jpg') ext = 'jpeg'
+        const blob = new Blob([ab], {type: 'image/' + ext})
+        image.src = URL.createObjectURL(blob)
+      }
       image.addEventListener('load', poll)
 
       var timeout
