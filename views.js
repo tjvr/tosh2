@@ -17,11 +17,11 @@ class RightLayout extends View {
     // maintain player's 4:3 aspect ratio
     this.children[0].size = {w: 0, h: 0}
     this._bb = this.el.getBoundingClientRect()
-    const w = this._bb.width
-    const h = w / 482 * 362
+    const w = this._bb.width - 2
+    const h = Math.floor(0.75 * w - 0.25)
     this.children[0].size = {w, h}
-    // adjust height of sprite list
 
+    // adjust height of sprite list
     this.children[1].el.style.top = (h + 30) + 'px'
     this.children[1].resize()
   }
