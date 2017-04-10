@@ -2,6 +2,7 @@
 const h = require('v2/h')
 const Collection = require('v2/view/collection')
 const View = require('v2/view/view')
+const emitter = require('v2/emitter')
 
 
 class RightLayout extends View {
@@ -28,9 +29,10 @@ class SpriteList extends Collection {
   constructor() {
     super()
     this.setTileSize(96, 96)
+    this._active = null
   }
 
-  get model() {return super.model}
+  get model() { return super.model }
   set model(value) {
     super.model = value
     const index = value.length > 1 ? 1 : 0
@@ -44,20 +46,25 @@ class SpriteList extends Collection {
   }
 
   selectRange(i, j, add) {
+    var oldValue
     for (const k of this._selection) {
       const item = this.itemAtIndex(k)
       if (item) item.selected = false
+      oldValue = this.model.get(k)
     }
     this._selection.clear()
     this._selection.add(i)
     const item = this.itemAtIndex(i)
     if (item) item.selected = true
+    let value = this.model.get(i)
+    this.emit('selection change', {target: this, value, oldValue})
     return this
   }
   clearSelection() {
     return this
   }
 }
+emitter(SpriteList)
 
 class SpriteItem extends Collection.Item {
   build() {

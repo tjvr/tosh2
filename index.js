@@ -45,12 +45,19 @@ function *globalBindings(m) {
 class Root extends Model {
   constructor() {
     super()
-    this.project = Project.create()
     this.name = 'tosh.sb2'
+    this.project = Project.create()
+    this.active = null
+  }
+
+  set project(stage) {
+    super.project = stage
+    this.active = null
   }
 }
-Root._property('project')
 Root._property('name')
+Root._property('project')
+Root._property('active')
 
 
 class ToshApp extends App {
@@ -95,8 +102,6 @@ class ToshApp extends App {
   }
 }
 
-const spriteList = new SpriteList
-
 const app = window.app = new ToshApp
 app.mount(document.body)
 
@@ -104,6 +109,11 @@ const um = window.um = new UndoManager
 ToshApp.prototype.undo = um.undo.bind(um)
 ToshApp.prototype.redo = um.redo.bind(um)
 um.watch(app.model)
+
+const spriteList = new SpriteList
+spriteList.on('selection change', e => {
+  app.model.active = e.value
+})
 
 const undoItem = new MenuBar.Item({title: 'Undo', action: 'undo', key: '#z'})
 const redoItem = new MenuBar.Item({title: 'Redo', action: 'redo', key: rt.isMac ? '^#z' : '#y'})
@@ -189,5 +199,9 @@ app.model.on('project change', e => {
 // TODO why is setTimeout needed
 setTimeout(() => {
   spriteList.model = app.model.project.sprites
+})
+
+app.model.on('active change', e => {
+  // TODO
 })
 
