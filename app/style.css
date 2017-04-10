@@ -65,7 +65,7 @@ body {
   position: absolute;
   top: 26px;
   left: 0;
-  right: 6px;
+  right: 4px;
   bottom: 0;
 }
 
@@ -95,7 +95,7 @@ body {
 
 .tosh-player-wrap {
   min-width: 160px;
-  max-width: 480px;
+  max-width: 482px;
 }
 
 #phosphorus {
@@ -249,16 +249,17 @@ body {
 
 .tosh-sprites {
   position: absolute;
-  border: 1px solid #999;
+  margin: 1px;
+  margin-top: 9px;
+  box-shadow: 0 0 0 1px #999;
   background: #f7f7f7; /* cf. CodeMirror-gutters */
   bottom: 0;
   overflow: scroll;
-  margin-top: 8px;
   left: 0;
   right: 0;
   bottom: 4px;
   font-size: 14px;
-  border-radius: 6px 6px 0 0;
+  border-radius: 4px;
 }
 
 .sprite-icon {
