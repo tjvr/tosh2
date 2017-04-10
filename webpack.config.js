@@ -3,7 +3,10 @@ const webpack = require('webpack')
 const path = require('path')
 
 module.exports = {
-  entry: './index.js',
+  entry: [
+    'babel-polyfill', // TODO remove this without requiring regenerator-runtime
+    './index.js',
+  ],
   output: {path: path.resolve(__dirname, 'build'), filename: 'tosh.bundle.js'},
   module: {
     loaders: [
