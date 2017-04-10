@@ -1,6 +1,7 @@
 'use strict'
 const h = require('v2/h')
 const View = require('v2/view/view')
+const emitter = require('v2/emitter')
 
 
 class Player extends View {
@@ -10,7 +11,7 @@ class Player extends View {
     this.stage = null
     this.scale = 1
     this.isFullScreen = false
-    this.flag.addEventListener('click', this.flagClick.bind(this))
+    this.flag.addEventListener('click', e => this.emit('flag click', e))
     this.pause.addEventListener('click', this.pauseClick.bind(this))
     this.stop.addEventListener('click', this.stopClick.bind(this))
     this.fullScreen.addEventListener('click', this.fullScreenClick.bind(this))
@@ -62,7 +63,6 @@ class Player extends View {
   }
 
   flagClick(e) {
-    // TODO send event to App
     if (!this.stage) return
     if (e.shiftKey) {
       this.turboClick()
@@ -163,7 +163,7 @@ class Player extends View {
     }
   }
 
-  sendProject(zip, project, start = true) {
+  sendProject(zip, project, start=true) {
     if (this.stage) {
       this.stage.stopAll()
       this.stage.pause()
@@ -232,7 +232,7 @@ class Player extends View {
       console.error(e.stack)
     }
 
-    // sometimes the project is already loaded!
+    // sometimes the project IO has already loaded!
     if (request.isDone) {
       if (request.isError) {
         console.error(request.result)
@@ -242,30 +242,6 @@ class Player extends View {
     }
   }
 
-
-  /*
-  // TODO transition to small stage when window is too small
-
-  var smallStageBtn = document.querySelector('.small-stage')
-  smallStageBtn.addEventListener('click', App.smallStage.toggle)
-
-  var MIN_WIDTH = 1000
-  var MIN_HEIGHT = 508
-  var windowTooSmall = windowSize.compute(function(size) {
-    return (size.width < MIN_WIDTH || size.height < MIN_HEIGHT)
-  })
-  windowTooSmall.subscribe(function(tooSmall) {
-    if (tooSmall) App.smallStage.assign(true)
-    if (tooSmall) {
-      smallStageBtn.classList.add('disabled')
-    } else {
-      smallStageBtn.classList.remove('disabled')
-    }
-  })
-  */
-
 }
-
-
+emitter(Player)
 module.exports = Player
-
