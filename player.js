@@ -55,7 +55,6 @@ class Player extends View {
     this.player.style.height = h + 'px'
     this.scale = w / 480
     if (this.stage) {
-      console.log(this.scale)
       this.stage.setZoom(this.scale)
       if (!stage.isRunning) {
         this.stage.draw()

@@ -202,6 +202,6 @@ setTimeout(() => {
 player.on('flag click', e => app.flagClick())
 
 app.model.on('active change', e => {
-  // TODO
+  editor.model = app.model.active
 })
 

@@ -36,11 +36,13 @@ class Editor extends View {
   get model() {return this._model}
   set model(value) {
     if (this._model === value) return
+    // TODO save pending changes
     if (this._model && this.isLive) this._unlisten()
     this._model = value
     if (this.isLive) {
       if (this._model) this._listen()
       this._layout()
+      this._changed()
     }
   }
   _onActivate() {
@@ -56,6 +58,7 @@ class Editor extends View {
   _listen() {this._model.on('change', this._changed)}
   _unlisten() {this._model.unlisten('change', this._changed)}
   _changed() {
+    // TODO this.model.scripts
   }
 
   resize() { this._layout() }
@@ -64,7 +67,7 @@ class Editor extends View {
     const bb = this.el.parentNode.getBoundingClientRect()
     this.el.style.width = bb.width + 'px'
 
-    // fix layotu
+    // fix layout
     this.cm.refresh()
 
     // // make sure scrollbar has width (cm.display.barWidth)
