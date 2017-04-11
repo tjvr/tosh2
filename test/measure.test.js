@@ -1,9 +1,20 @@
 
 const fs = require('fs')
 
+const Scratch = require('../scratch')
 const measure = require('../measure')
 
 
+describe('block info', () => {
+
+  test('when flag clicked', () => {
+    expect(Scratch.blockInfo(['whenGreenFlag'])).toMatchObject({
+      shape: 'hat',
+      category: 'events',
+    })
+  })
+
+})
 
 describe('measure scripts', () => {
 

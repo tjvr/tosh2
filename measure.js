@@ -4,24 +4,22 @@ const Scratch = require('./scratch')
 
 var measureLog = function(message) {}
 
-function internalHeight(info) {
-  var shape = info.shape
+function internalHeight(selector, shape) {
   switch (shape) {
     case 'if-block':    return 36
     case 'c-block cap': return 34 // "forever"
     case 'cap':         return 8
     case 'c-block':     return 21
     case 'stack':       return 9
-    case 'hat':         return (info.selector === 'whenGreenFlag') ? 25
+    case 'hat':         return (selector === 'whenGreenFlag') ? 25
                              : 18
     case 'predicate':   return 5 // ###
     case 'reporter':    return 4 // ###
   }
-  throw "internalHeight can't do " + info.selector
+  throw "internalHeight can't do " + selector
 }
 
-function noInputs(info) {
-  var shape = info.shape
+function noInputs(shape) {
   switch (shape) {
     case 'stack':       return 16
     case 'cap':
@@ -30,7 +28,7 @@ function noInputs(info) {
     case 'reporter':    return 16 // # TODO
     case 'hat':         return emptySlot('readonly-menu')
   }
-  throw "noInputs can't do " + info.selector
+  throw "noInputs can't do " + shape
 }
 
 function emptySlot(inputShape) {
@@ -52,30 +50,6 @@ function measureList(list, debug) {
   return sum(list.map(measureBlock)) - 3 * (list.length - 1)
 }
 
-function blockInfo(block) {
-  var selector = block[0],
-      args = block.slice(1),
-      info
-  switch (selector) {
-    case 'call':
-      spec = args.shift()
-      info = {
-        spec: spec,
-        parts: spec.split(Scratch.inputPat),
-        shape: 'stack',
-        category: 'custom',
-        selector: null,
-        defaults: [], // not needed
-      }
-      info.inputs = info.parts.filter(function(p) { return Scratch.inputPat.test(p) })
-      return info
-    default:
-      info = Scratch.blocksBySelector[selector]
-      if (!info) throw "unknown selector: " + selector
-      return info
-  }
-}
-
 function measureBlock(block) {
   // be careful not to pass a list here (or a block to measureList!)
   var selector = block[0],
@@ -92,12 +66,12 @@ function measureBlock(block) {
     })
     return hasBooleans ? 65 : hasInputs ? 64 : 60
   }
-  var info = blockInfo(block)
+  var info = Scratch.blockInfo(block)
   if (selector === 'call') {
     args.shift() // spec
   }
 
-  var internal = internalHeight(info)
+  var internal = internalHeight(selector, info.shape)
   measureLog(internal, "internalHeight", info.selector)
   if (selector === 'stopScripts' &&
       ['all', 'this script'].indexOf(args[0]) === -1) {
@@ -111,7 +85,7 @@ function measureBlock(block) {
                 || /c-block|if-block/.test(info.shape))
 
   if (!hasInputs) {
-    argHeight = noInputs(info)
+    argHeight = noInputs(info.shape)
     measureLog(argHeight, "noInputs", info.shape)
 
   } else { // has inputs
@@ -135,7 +109,7 @@ function measureBlock(block) {
           // does it end with a cap block?
           var last = arg.slice().pop()
           if (last) {
-            var lastInfo = blockInfo(last)
+            var lastInfo = Scratch.blockInfo(last)
             if (/cap/.test(lastInfo.shape)) {
               foo += 3
             }
