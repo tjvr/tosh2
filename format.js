@@ -262,9 +262,10 @@ Sound.dataProperties.push('format')
 
 
 class Project {
-  static create() {
-    return Stage.create()
-  }
+  static create() { return Stage.create() }
+  static createSprite() { return Sprite.create() }
+  static createVariable() { return Scriptable.newVariable() }
+  static createList() { return Scriptable.newList() }
 
   static loadZipFile(file) {
     return new Promise((resolve, reject) => {
@@ -359,5 +360,4 @@ Costume.defaultCostume = () => new Costume({
   rotationCenterY: 8,
 })
 
-module.exports = {Project, Sprite}
-
+module.exports = Project

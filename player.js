@@ -3,7 +3,7 @@ const h = require('v2/h')
 const View = require('v2/view/view')
 const emitter = require('v2/emitter')
 
-const {Project} = require('./project')
+const Project = require('./format')
 
 
 class Player extends View {

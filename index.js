@@ -16,7 +16,7 @@ const MenuBar = require('v2/view/menu-bar')
 const Split = require('v2/view/split')
 const UndoManager = require('v2/undo-manager')
 
-const {Project} = require('./project')
+const Project = require('./format')
 const {SpriteList, RightLayout} = require('./views')
 const Editor = require('./editor')
 const Player = require('./player')

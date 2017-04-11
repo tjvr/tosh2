@@ -1,9 +1,9 @@
 
 const fs = require('fs')
 const JSZip = global.JSZip = require('jszip')
-//require('../phosphorus/phosphorus.js')
+require('../phosphorus/phosphorus.js')
 
-const {Project} = require('../project')
+const Project = require('../format')
 
 
 
