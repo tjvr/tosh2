@@ -102,7 +102,8 @@ class ToshApp extends App {
   }
 
   leavePlayer() {
-    // TODO
+    player.pauseClick()
+    editor.focus()
   }
 
   openHelp() {
@@ -139,7 +140,7 @@ const mb = new MenuBar({
     ]})}],
     ['Project', {menu: () => new Menu({spec: [
       ['Run', 'flagClick', {key: '#Enter', enabled: true}],
-      ['Stop', 'leavePlayer', {key: 'Escape', enabled: false}],
+      ['Stop', 'leavePlayer', {key: 'Escape', enabled: player.isRunning}],
     ]})}],
     ['Help', [
       ['Guide', () => openInTab('/help/guide/')],

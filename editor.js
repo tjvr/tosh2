@@ -73,7 +73,10 @@ class Editor extends View {
     // this.cm.setOption('scrollbarStyle', this.cmOptions.scrollbarStyle);
   }
 
-  // activate / deactivate?
+  focus() {
+    this.cm.focus()
+  }
+
 }
 
 var extraKeys = {

@@ -48,6 +48,8 @@ class Player extends View {
     ])
   }
 
+  get isRunning() { return this.stage && this.stage.isRunning }
+
   set size({w, h}) {
     this.player.style.width = w + 'px'
     this.player.style.height = h + 'px'
@@ -91,7 +93,7 @@ class Player extends View {
       this.pause.className = 'pause'
     }
     this.stage.focus()
-    e.preventDefault()
+    if (e) e.preventDefault()
   }
 
   stopClick(e) {
@@ -100,6 +102,7 @@ class Player extends View {
     this.pause.className = 'pause'
     this.stage.stopAll()
     this.stage.focus()
+    this.stage.isRunning = false // nb. ??
     e.preventDefault()
   }
 
