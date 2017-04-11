@@ -8,6 +8,9 @@
   "author": "Tim Radvan <tim@tjvr.org>",
   "browser": "index.js",
   "scripts": {
+    "start": "npm run watch& npm run serve",
+    "watch": "prcl -w index.js app/parcel.js",
+    "server": "http-server -s",
     "start": "prcl -w index.js app/parcel.js& http-server -s",
     "build": "webpack"
   },
