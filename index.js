@@ -98,8 +98,7 @@ class ToshApp extends App {
 
   flagClick() {
     // TODO compile
-    const zip = Project.save(this.model.project)
-    player.sendProject(zip)
+    player.sendProject(this.model.project)
   }
 
   leavePlayer() {

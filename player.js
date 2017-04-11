@@ -3,6 +3,8 @@ const h = require('v2/h')
 const View = require('v2/view/view')
 const emitter = require('v2/emitter')
 
+const {Project} = require('./project')
+
 
 class Player extends View {
   /* originally based on nathan/phosphorus#b3ba0df */
@@ -11,6 +13,8 @@ class Player extends View {
     this.stage = null
     this.scale = 1
     this.isFullScreen = false
+    this.sending = false
+
     this.flag.addEventListener('click', e => this.emit('flag click', e))
     this.pause.addEventListener('click', this.pauseClick.bind(this))
     this.stop.addEventListener('click', this.stopClick.bind(this))
@@ -49,6 +53,7 @@ class Player extends View {
     this.player.style.height = h + 'px'
     this.scale = w / 480
     if (this.stage) {
+      console.log(this.scale)
       this.stage.setZoom(this.scale)
       if (!stage.isRunning) {
         this.stage.draw()
@@ -163,50 +168,73 @@ class Player extends View {
     }
   }
 
-  sendProject(zip, project, start=true) {
+  syncBack() {
+    if (!this.stage) return
+    const scriptables = [this.stage].concat(this.stage.children)
+    for (const s of scriptables) {
+      if (!(s.isStage || s.isSprite)) continue
+      // } else if (s.target) { // TODO watchers?
+      if (s.isClone) continue
+      const t = s._tosh
+      for (const v of t.variables) {
+        v.value = s.vars[s.name] || v.value
+      }
+      for (const l of t.lists) {
+        l.value = s.lists[s.listName] ? s.lists[s.listName].contents : l.value
+      }
+      t.currentCostumeIndex = s.currentCostumeIndex
+      if (s.isStage) {
+        t.tempoBPM = s.tempoBPM
+      } else {
+        t.scratchX = s.scratchX
+        t.scratchY = s.scratchY
+        t.direction = s.direction
+        t.rotationStyle = s.rotationStyle
+        t.visible = s.visible
+      }
+    }
+  }
+
+  sendProject(project, start=true) {
     if (this.stage) {
       this.stage.stopAll()
       this.stage.pause()
     }
+    if (this.sending) {
+      // TODO cancel in-flight request?
+    } else {
+      this.syncBack()
+    }
 
     // send phosphorus the zip object
+    const zip = Project.save(project)
     const request = P.IO.loadSB2Project(zip)
     if (request.isError) {
       console.error(request.result)
       return
     }
 
-    /*
     // save list of children, in case it changes _while the project is loading_
-    const children = project.children.slice()
-    */
+    // nb. phosphorus doesn't support list watchers
+    const children = project.children.filter(o => !!o.objName)
+
     this._loadProject(request, stage => {
+      // save info for sync
+      stage._tosh = project
+      for (var i=0; i<stage.children.length; i++) {
+        const s = stage.children[i]
+        if (s.isSprite) s._tosh = children[i]
+      }
+
       stage.handleError = function(e) {
         console.error(e.stack || e)
       }
-
-      stage._tosh = project
-
-      /*
-      // sync() needs references to original scriptable
-      // phosphorus doesn't support list watchers
-      children = children.filter(function(obj) { return !!obj.objName; })
-      for (var i=0; i<stage.children.length; i++) {
-        var s = stage.children[i]
-        if (s.isSprite) {
-          s._tosh = children[i]
-        }
-      }
-      */
-
       if (start) {
         stage.focus()
         stage.triggerGreenFlag()
       }
     })
   }
-
-  // TODO sync
 
   _loadProject(request, cb) {
     var stage = this.stage
