@@ -1,6 +1,5 @@
 
 const nearley = require('nearley')
-const reverse = require('nearley-reverse')
 const grammar = nearley.Grammar.fromCompiled(require('../editor/grammar'))
 
 function parseFile(source) {
@@ -26,7 +25,7 @@ function parseBlock(source) {
 }
 
 
-describe('parseFile', () => {
+describe('parse', () => {
 
   test('line', () => {
     expect(parseBlock('stamp')).toEqual(['stampCostume'])
@@ -50,10 +49,12 @@ describe('parseFile', () => {
   })
 
   test('blank lines', () => {
-    expect(parseFile('\n\nstamp\n \t\nstamp\n\n')).toEqual([
+    const output = [
       [ ['stampCostume'] ],
       [ ['stampCostume'] ],
-    ])
+    ]
+    expect(parseFile('\n\nstamp\n\nstamp\n\n')).toEqual(output)
+    expect(parseFile('\n\nstamp\n \t\nstamp\n\n')).toEqual(output)
   })
 
   test('operator precedence', () => {
@@ -65,7 +66,39 @@ describe('parseFile', () => {
 
 describe('generate', () => {
 
-  // TODO
+  const generate = require('../editor/reverse.js')
+
+  function check(text, scripts) {
+    if (!scripts) scripts = parseFile(text)
+    else expect(parseFile(text)).toEqual(scripts)
+    expect(generate(scripts)).toBe(text)
+  }
+
+  function checkBlock(text, block) {
+    const script = [block]
+    const scripts = [script]
+    check(text, scripts)
+  }
+
+  test('block', () => {
+    checkBlock('say "hello"', ['say:', 'hello'])
+  })
+
+  test('operator precedence', () => {
+    checkBlock('say 2 * 3 + 4', ['say:', ['+', ['*', 2, 3], 4]])
+    checkBlock('say 2 + 3 * 4', ['say:', ['+', 2, ['*', 3, 4]]])
+    checkBlock('say (2 + 3) * 4', ['say:', ['*', ['+', 2, 3], 4]])
+    checkBlock('say 2 * (3 + 4)', ['say:', ['*', 2, ['+', 3, 4]]])
+  })
+
+  test('script', () => {
+    check('show\nhide', [[['show'], ['hide']]])
+  })
+
+  test('scripts', () => {
+    check('stamp\n\nstamp')
+  })
+
 
 })
 

@@ -129,6 +129,7 @@ var push2 = factory((a, _, c) => {
     a.push(c)
     return a
 }, s => {
+  if (s.length < 2) return false
   var s = s.slice()
   var last = s.pop()
   return [s, null, last]
@@ -136,9 +137,13 @@ var push2 = factory((a, _, c) => {
 
 var box = factory(s => {
     return [s]
-}, ([x]) => [x])
+}, d => {
+  if (d.length !== 1) return false
+  return [d[0]]
+})
 
-var ignore = factory(a => null, _ => [])
+const empty = []
+var ignore = factory(a => null, _ => empty)
 
 %}
 
@@ -149,8 +154,8 @@ padding -> (%WS | %NL):*  {% ignore %}
 scripts -> scripts scriptSep script {% push2 %}
          | script                   {% box %}
 
-scriptSep -> %NL %WS:? %NL        {% ignore %}
-           | scriptSep %WS:? %NL  {% ignore %}
+scriptSep -> %NL _ %NL        {% ignore %}
+           | scriptSep _ %NL  {% ignore %}
 
 script -> script %NL line {% push2 %}
         | line            {% box %}
