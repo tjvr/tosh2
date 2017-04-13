@@ -18,6 +18,12 @@ require('codemirror/addon/runmode/runmode')
 require('codemirror/keymap/vim')
 require('codemirror/keymap/emacs')
 
+const Nearley = require('nearley')
+const reverse = require('nearley-reverse')
+const grammar = Nearley.Grammar.fromCompiled(require('./grammar'))
+const mode = require('./mode')
+
+
 class Editor extends View {
   constructor() {
     super()
@@ -70,15 +76,51 @@ class Editor extends View {
     // fix layout
     this.cm.refresh()
 
-    // // make sure scrollbar has width (cm.display.barWidth)
-    // // otherwise annotations won't appear!
-    // this.cm.setOption('scrollbarStyle', 'native');
-    // this.cm.setOption('scrollbarStyle', this.cmOptions.scrollbarStyle);
+    //// make sure scrollbar has width (cm.display.barWidth)
+    //// otherwise annotations won't appear!
+    //this.cm.setOption('scrollbarStyle', 'native');
+    //this.cm.setOption('scrollbarStyle', this.cmOptions.scrollbarStyle);
   }
 
   focus() {
     this.cm.focus()
   }
+
+  /*
+   * TODO highlight custom blocks
+  checkDefinitions = function() {
+    var defineParser = new Earley.Parser(Language.defineGrammar);
+
+    var definitions = [];
+    this.cm.doc.iter(function(line) {
+      var line = line.text;
+      if (!Language.isDefinitionLine(line)) return;
+
+      var tokens = Language.tokenize(line);
+      var results;
+      try {
+        results = defineParser.parse(tokens);
+      } catch (e) { return; }
+      if (results.length > 1) throw "ambiguous define. count: " + results.length;
+      var define = results[0].process();
+      definitions.push(define);
+    });
+
+    var oldDefinitions = this.definitions;
+    if (JSON.stringify(oldDefinitions) !== JSON.stringify(definitions)) {
+      this.definitions = definitions;
+      return true;
+    }
+  };
+
+  repaint() {
+    // force re-highlight --slow!
+    this.cm.setOption('mode', {
+      name: 'tosh',
+      definitions: this.definitions,
+    })
+  }
+  */
 
 }
 
@@ -106,7 +148,10 @@ var extraKeys = {
 //extraKeys[Host.isMac ? 'Cmd-F' : 'Ctrl-F'] = 'findPersistent';
 
 Editor.prototype.cmOptions = {
-  mode: '',
+  mode: {
+    name: 'tosh',
+    grammar,
+  },
 
   indentUnit: 3,
   smartIndent: true,

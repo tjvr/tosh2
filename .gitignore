@@ -3,3 +3,4 @@ app/parcel.js
 app/parcel.js.map
 bundle.js
 build/
+editor/grammar.js

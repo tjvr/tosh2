@@ -7,7 +7,7 @@ const Project = require('../format')
 
 
 
-let readZip = function(name) {
+function readZip(name) {
   return new Promise((resolve, reject) => {
     fs.readFile(name, (err, data) => {
       if (err) reject(err)

@@ -8,15 +8,19 @@
   "author": "Tim Radvan <tim@tjvr.org>",
   "browser": "index.js",
   "scripts": {
-    "start": "npm run watch& npm run serve",
+    "test": "jest",
+    "start": "prcl -w index.js app/parcel.js& http-server -s",
     "watch": "prcl -w index.js app/parcel.js",
     "server": "http-server -s",
-    "start": "prcl -w index.js app/parcel.js& http-server -s",
+    "grammar": "nearleyc editor/grammar.ne > editor/grammar.js",
     "build": "webpack"
   },
   "dependencies": {
     "codemirror": "^5.25.0",
     "jszip": "^2",
+    "moo": "^0.3.1",
+    "nearley": "git://github.com/Hardmath123/nearley.git#moo",
+    "nearley-reverse": "git://github.com/tjvr/nearley-reverse.git#d650bc6",
     "v2": "git://github.com/nathan/v2.git#03984d2"
   },
   "devDependencies": {
