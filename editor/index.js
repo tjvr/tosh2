@@ -156,6 +156,7 @@ Editor.prototype.cmOptions = {
       switch (rule.name) {
         case '_greenFlag': return 's-green'
         case 'b0': return 'false'
+        case 'end': case 'else': return 's-control'
       }
       const factory = rule.postprocess
       const selector = factory && factory.selector

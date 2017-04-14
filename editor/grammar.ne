@@ -131,7 +131,7 @@ var push2 = factory((a, _, c) => {
   a.push(c)
   return a
 }, s => {
-  if (s.length < 2) return false
+  if (!s || s.length < 2) return false
   var s = s.slice()
   var last = s.pop()
   return [s, null, last]
@@ -140,7 +140,7 @@ var push2 = factory((a, _, c) => {
 var box = factory(s => {
   return [s]
 }, d => {
-  if (d.length !== 1) return false
+  if (!d || d.length !== 1) return false
   return [d[0]]
 })
 
@@ -424,6 +424,28 @@ d_note -> n {% id %}
 
 m_attribute -> jpart {% id %}
 
+
+block -> hat
+hat   -> "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
+       | "when" __ m_key __ "key" __ "pressed" {% block("whenKeyPressed", 2) %}
+       | "when" __ "this" __ "sprite" __ "clicked" {% block("whenClicked") %}
+       | "when" __ "backdrop" __ "switches" __ "to" __ m_backdrop {% block("whenSceneStarts", 8) %}
+       | "when" __ m_triggerSensor __ ">" __ n {% block("whenSensorGreaterThan", 2, 6) %}
+       | "when" __ "I" __ "receive" __ m_broadcast {% block("whenIReceive", 6) %}
+       | "when" __ "I" __ "start" __ "as" __ "a" __ "clone" {% block("whenCloned") %}
+
+mouth -> %NL script %NL end  {% select(1) %}
+       | %NL end             {% literal(null) %}
+
+elsemouth -> %NL script %NL else  {% select(1) %}
+           | %NL else             {% literal(null) %}
+
+block -> "repeat" __ n _ mouth  {% block("doRepeat", 2, 4) %}
+       | "if" __ b __ "then" _ mouth {% block("doIf", 2, 6) %}
+       | "if" __ b __ "then" _ elsemouth mouth {% block("doIfElse", 2, 6, 7) %}
+       | "forever" _ mouth {% block("doForever", 2) %}
+       | "repeat" __ "until" __ b _ mouth {% block("doUntil", 4, 6) %}
+
 block -> "move" __ n __ "steps" {% block("forward:", 2) %}
        | "turn" __ _turnRight __ n __ "degrees" {% block("turnRight:", 4) %}
        | "turn" __ _turnLeft __ n __ "degrees" {% block("turnLeft:", 4) %}
@@ -477,22 +499,11 @@ block -> "move" __ n __ "steps" {% block("forward:", 2) %}
        | "set" __ "pen" __ "shade" __ "to" __ n {% block("setPenShadeTo:", 8) %}
        | "change" __ "pen" __ "size" __ "by" __ n {% block("changePenSizeBy:", 8) %}
        | "set" __ "pen" __ "size" __ "to" __ n {% block("penSize:", 8) %}
-       | "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
-       | "when" __ m_key __ "key" __ "pressed" {% block("whenKeyPressed", 2) %}
-       | "when" __ "this" __ "sprite" __ "clicked" {% block("whenClicked") %}
-       | "when" __ "backdrop" __ "switches" __ "to" __ m_backdrop {% block("whenSceneStarts", 8) %}
-       | "when" __ m_triggerSensor __ ">" __ n {% block("whenSensorGreaterThan", 2, 6) %}
-       | "when" __ "I" __ "receive" __ m_broadcast {% block("whenIReceive", 6) %}
        | "broadcast" __ m_broadcast {% block("broadcast:", 2) %}
        | "broadcast" __ m_broadcast __ "and" __ "wait" {% block("doBroadcastAndWait", 2) %}
        | "wait" __ n __ "secs" {% block("wait:elapsed:from:", 2) %}
-       | "repeat" __ n {% block("doRepeat", 2) %}
-       | "forever" {% block("doForever") %}
-       | "if" __ b __ "then" {% block("doIfElse", 2) %}
        | "wait" __ "until" __ b {% block("doWaitUntil", 4) %}
-       | "repeat" __ "until" __ b {% block("doUntil", 4) %}
        | "stop" __ m_stop {% block("stopScripts", 2) %}
-       | "when" __ "I" __ "start" __ "as" __ "a" __ "clone" {% block("whenCloned") %}
        | "create" __ "clone" __ "of" __ m_spriteOnly {% block("createCloneOf", 6) %}
        | "delete" __ "this" __ "clone" {% block("deleteClone") %}
        | "ask" __ sb __ "and" __ "wait" {% block("doAsk", 2) %}
@@ -541,9 +552,9 @@ simple_reporter -> "mouse" __ "x" {% block("mouseX") %}
 
 simple_reporter -> VariableName {% block("readVariable", 0) %}
 
-block -> "else" {% block("else") %}
-       | "end" {% block("end") %}
-       | "..." {% block("ellips") %}
+else -> _ "else" _  {% ignore %}
+end -> _ "end" _    {% ignore %}
+ellips -> _ "..." _ {% ignore %}
 
 
 _ -> %WS | null {% ignore %}

@@ -69,16 +69,18 @@ describe('generate', () => {
 
   const generate = require('../editor/reverse.js')
 
-  function check(text, scripts) {
+  function checkFile(text, scripts) {
     if (!scripts) scripts = parseFile(text)
     else expect(parseFile(text)).toEqual(scripts)
     expect(generate(scripts)).toBe(text)
   }
 
+  function checkScript(text, script) {
+    checkFile(text, script ? [script] : parseScript(text))
+  }
+
   function checkBlock(text, block) {
-    const script = [block]
-    const scripts = [script]
-    check(text, scripts)
+    checkScript(text, block ? [block] : parseBlock(text))
   }
 
   test('block', () => {
@@ -93,11 +95,27 @@ describe('generate', () => {
   })
 
   test('script', () => {
-    check('show\nhide', [[['show'], ['hide']]])
+    checkScript('show\nhide', [['show'], ['hide']])
   })
 
   test('scripts', () => {
-    check('stamp\n\nstamp')
+    checkFile('stamp\n\nstamp')
+  })
+
+  test('c-blocks', () => {
+    checkBlock('repeat 10\nstamp\nend', ['doRepeat', 10, [['stampCostume']]])
+    checkBlock('if <> then\nstamp\nend', ['doIf', false, [['stampCostume']]])
+    checkBlock('if <> then\nshow\nelse\nhide\nend', ['doIfElse', false, [['show']], [['hide']]])
+    checkBlock('repeat until <>\nif on edge, bounce\nend', ['doUntil', false, [['bounceOffEdge']]])
+    checkBlock('forever\nhide\nend', ['doForever', [['hide']]])
+  })
+
+  test('empty c-blocks', () => {
+    checkBlock('repeat 10\nend', ['doRepeat', 10, null])
+    checkBlock('if <> then\nend', ['doIf', false, null])
+    checkBlock('if <> then\nelse\nend', ['doIfElse', false, null, null])
+    checkBlock('repeat until <>\nend', ['doUntil', false, null])
+    checkBlock('forever\nend', ['doForever', null])
   })
 
 })
