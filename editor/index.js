@@ -21,6 +21,7 @@ require('codemirror/keymap/emacs')
 const nearley = require('nearley')
 const generate = require('./reverse')
 const grammar = nearley.Grammar.fromCompiled(require('./grammar'))
+const measure = require('../measure')
 const Scratch = require('../scratch')
 const mode = require('./mode')
 
@@ -62,22 +63,33 @@ class Editor extends View {
   }
 
   generate() {
+    // TODO sort scripts by y position
     const scripts = this.model.scripts.map(([x, y, blocks]) => blocks)
     return generate(scripts)
   }
 
   compile() {
+    const source = this.cm.getValue()
+    // TODO cache compiled-ness
     const model = this._model
     const parser = new nearley.Parser(grammar)
     try {
-      parser.feed(this.cm.getValue())
+      parser.feed(source)
     } catch (e) {
+      console.error(e)
       model.scripts = {error: e}
       return
     }
     const results = parser.results
     if (results.length > 1) throw new Error("Ambiguous!")
-    model.scripts = results[0]
+    const scripts = []
+    const x = 10
+    var y = 10
+    for (let script of results[0]) {
+      scripts.push([x, y, script])
+      y += measure(script) + 10
+    }
+    model.scripts = scripts
   }
 
   // TODO bind to sprite

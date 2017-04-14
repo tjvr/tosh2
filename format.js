@@ -108,7 +108,21 @@ class Stage extends Scriptable {
     this.sprites.data = sprites
   }
   bindChildren() {
-    // TODO listen for sprite modifications & update children accordingly
+    this.sprites.on('change', ({changes}) => {
+      for (const data of changes) {
+        if (data.type === 'replace') throw new Error('replace not handled')
+        for (var j=data.removed; j--; ) {
+          const sprite = data.removed[j]
+          const index = this.children.indexOf(sprite)
+          this.children.splice(index, 1)
+        }
+        for (var j=0; j<data.added; j++) {
+          const sprite = this.sprites.get(data.index + j)
+          if (sprite === this) continue
+          this.children.push(sprite)
+        }
+      }
+    })
   }
 
   get costumes() { return this._costumes }
