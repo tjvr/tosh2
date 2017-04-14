@@ -1,0 +1,1244 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`load/save nutella round-trip 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: x var",
+      "mode": 1,
+      "param": "x var",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 5,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: y var",
+      "mode": 1,
+      "param": "y var",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 59,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: vx",
+      "mode": 1,
+      "param": "vx",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 86,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: vy",
+      "mode": 1,
+      "param": "vy",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 113,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: factor",
+      "mode": 1,
+      "param": "factor",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 167,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: z var",
+      "mode": 1,
+      "param": "z var",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 32,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: vz",
+      "mode": 1,
+      "param": "vz",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 140,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: dist",
+      "mode": 1,
+      "param": "dist",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 285,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: dx",
+      "mode": 1,
+      "param": "dx",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 231,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "me: dy",
+      "mode": 1,
+      "param": "dy",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "me",
+      "visible": false,
+      "x": 5,
+      "y": 258,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "shadow: size var",
+      "mode": 1,
+      "param": "size var",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "shadow",
+      "visible": false,
+      "x": 5,
+      "y": 312,
+    },
+    Object {
+      "costumes": Array [
+        Object {
+          "baseLayerID": 1,
+          "baseLayerMD5": "86a26c8bb8f7e12c2ca1c7bbb87ea5b8.svg",
+          "bitmapResolution": 1,
+          "costumeName": "costume2",
+          "rotationCenterX": 41,
+          "rotationCenterY": 37,
+        },
+        Object {
+          "baseLayerID": 2,
+          "baseLayerMD5": "5a29760616740df7ce0d4d03b7257ee1.svg",
+          "bitmapResolution": 1,
+          "costumeName": "costume1",
+          "rotationCenterX": 47,
+          "rotationCenterY": 46,
+        },
+        Object {
+          "baseLayerID": 3,
+          "baseLayerMD5": "f391fe63d3bb6310adb00bcd5a07e9d9.svg",
+          "bitmapResolution": 1,
+          "costumeName": "costume3",
+          "rotationCenterX": 52,
+          "rotationCenterY": 49,
+        },
+      ],
+      "currentCostumeIndex": 1,
+      "direction": 90,
+      "indexInLibrary": 3,
+      "isDraggable": false,
+      "objName": "splat",
+      "rotationStyle": "normal",
+      "scale": 1,
+      "scratchX": 43.0704481307507,
+      "scratchY": -56.89657339170309,
+      "scripts": Array [
+        Array [
+          10,
+          10,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+            Array [
+              "setVar:to:",
+              "jUMPS",
+              0,
+            ],
+            Array [
+              "setVolumeTo:",
+              20,
+            ],
+            Array [
+              "hide",
+            ],
+            Array [
+              "clearPenTrails",
+            ],
+          ],
+        ],
+        Array [
+          10,
+          149,
+          Array [
+            Array [
+              "whenIReceive",
+              "splat",
+            ],
+            Array [
+              "changeVar:by:",
+              "jUMPS",
+              1,
+            ],
+            Array [
+              "lookLike:",
+              Array [
+                "randomFrom:to:",
+                1,
+                3,
+              ],
+            ],
+            Array [
+              "playSound:",
+              "water drop",
+            ],
+            Array [
+              "setVar:to:",
+              "factor",
+              Array [
+                "/",
+                240,
+                Array [
+                  "readVariable",
+                  "pancake z",
+                ],
+              ],
+            ],
+            Array [
+              "gotoX:y:",
+              Array [
+                "*",
+                Array [
+                  "getAttribute:of:",
+                  "x var",
+                  "me",
+                ],
+                Array [
+                  "readVariable",
+                  "factor",
+                ],
+              ],
+              Array [
+                "*",
+                Array [
+                  "getAttribute:of:",
+                  "y var",
+                  "me",
+                ],
+                Array [
+                  "readVariable",
+                  "factor",
+                ],
+              ],
+            ],
+            Array [
+              "setSizeTo:",
+              100,
+            ],
+            Array [
+              "stampCostume",
+            ],
+            Array [
+              "broadcast:",
+              "check",
+            ],
+          ],
+        ],
+      ],
+      "sounds": Array [
+        Object {
+          "format": "",
+          "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+          "rate": 11025,
+          "sampleCount": 258,
+          "soundID": 0,
+          "soundName": "pop",
+        },
+        Object {
+          "format": "adpcm",
+          "md5": "aa488de9e2c871e9d4faecd246ed737a.wav",
+          "rate": 22050,
+          "sampleCount": 8136,
+          "soundID": 1,
+          "soundName": "water drop",
+        },
+      ],
+      "spriteInfo": Object {},
+      "variables": Array [
+        Object {
+          "isPersistent": false,
+          "name": "factor",
+          "value": 0.4395604395604395,
+        },
+      ],
+      "visible": false,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "splat: factor",
+      "mode": 1,
+      "param": "factor",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "splat",
+      "visible": false,
+      "x": 140,
+      "y": 32,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "pancake z",
+      "mode": 3,
+      "param": "pancake z",
+      "sliderMax": 720,
+      "sliderMin": 240,
+      "target": "Stage",
+      "visible": false,
+      "x": 5,
+      "y": 194,
+    },
+    Object {
+      "cmd": "getVar:",
+      "color": 15629590,
+      "isDiscrete": true,
+      "label": "jUMPS",
+      "mode": 1,
+      "param": "jUMPS",
+      "sliderMax": 100,
+      "sliderMin": 0,
+      "target": "Stage",
+      "visible": true,
+      "x": 1,
+      "y": 6,
+    },
+    Object {
+      "costumes": Array [
+        Object {
+          "baseLayerID": 4,
+          "baseLayerMD5": "c7fb49ffaba5df9e0352cd6aad8da7ae.svg",
+          "bitmapResolution": 1,
+          "costumeName": "costume1",
+          "rotationCenterX": 165,
+          "rotationCenterY": 152,
+        },
+      ],
+      "currentCostumeIndex": 0,
+      "direction": 90,
+      "indexInLibrary": 4,
+      "isDraggable": false,
+      "objName": "check",
+      "rotationStyle": "normal",
+      "scale": 1,
+      "scratchX": -18,
+      "scratchY": 8,
+      "scripts": Array [
+        Array [
+          40,
+          101,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+            Array [
+              "hide",
+            ],
+          ],
+        ],
+        Array [
+          40,
+          193,
+          Array [
+            Array [
+              "whenIReceive",
+              "check",
+            ],
+            Array [
+              "doBroadcastAndWait",
+              "hide pusheen",
+            ],
+            Array [
+              "show",
+            ],
+            Array [
+              "setGraphicEffect:to:",
+              "ghost",
+              100,
+            ],
+            Array [
+              "doIf",
+              Array [
+                "not",
+                Array [
+                  "touchingColor:",
+                  -598383,
+                ],
+              ],
+              Array [
+                Array [
+                  "broadcast:",
+                  "show pusheen",
+                ],
+                Array [
+                  "broadcast:",
+                  "win",
+                ],
+              ],
+            ],
+            Array [
+              "hide",
+            ],
+            Array [
+              "broadcast:",
+              "show pusheen",
+            ],
+          ],
+        ],
+      ],
+      "sounds": Array [
+        Object {
+          "format": "",
+          "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+          "rate": 11025,
+          "sampleCount": 258,
+          "soundID": 0,
+          "soundName": "pop",
+        },
+      ],
+      "spriteInfo": Object {},
+      "visible": false,
+    },
+    Object {
+      "costumes": Array [
+        Object {
+          "baseLayerID": 5,
+          "baseLayerMD5": "6ac0b24089a5c4fbdeb33893d72832ce.svg",
+          "bitmapResolution": 1,
+          "costumeName": "costume1",
+          "rotationCenterX": 248,
+          "rotationCenterY": 154,
+        },
+      ],
+      "currentCostumeIndex": 0,
+      "direction": 90,
+      "indexInLibrary": 5,
+      "isDraggable": false,
+      "objName": "win",
+      "rotationStyle": "normal",
+      "scale": 1,
+      "scratchX": 16,
+      "scratchY": -58,
+      "scripts": Array [
+        Array [
+          30,
+          78,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+            Array [
+              "hide",
+            ],
+          ],
+        ],
+        Array [
+          32,
+          186,
+          Array [
+            Array [
+              "whenIReceive",
+              "win",
+            ],
+            Array [
+              "show",
+            ],
+            Array [
+              "stopScripts",
+              "all",
+            ],
+          ],
+        ],
+        Array [
+          54,
+          331,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+          ],
+        ],
+        Array [
+          73,
+          435,
+          Array [
+            Array [
+              "volume",
+            ],
+          ],
+        ],
+      ],
+      "sounds": Array [
+        Object {
+          "format": "",
+          "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+          "rate": 11025,
+          "sampleCount": 258,
+          "soundID": 0,
+          "soundName": "pop",
+        },
+      ],
+      "spriteInfo": Object {},
+      "visible": false,
+    },
+    Object {
+      "costumes": Array [
+        Object {
+          "baseLayerID": 6,
+          "baseLayerMD5": "a82338543f90d458e69a68f5b358c5e1.png",
+          "bitmapResolution": 2,
+          "costumeName": "nutella",
+          "rotationCenterX": 406,
+          "rotationCenterY": 256,
+        },
+      ],
+      "currentCostumeIndex": 0,
+      "direction": 90,
+      "indexInLibrary": 2,
+      "isDraggable": false,
+      "objName": "shadow",
+      "rotationStyle": "normal",
+      "scale": 0.26373626373626374,
+      "scratchX": 52,
+      "scratchY": -50,
+      "scripts": Array [
+        Array [
+          10,
+          10,
+          Array [
+            Array [
+              "whenIReceive",
+              "show pusheen",
+            ],
+            Array [
+              "show",
+            ],
+          ],
+        ],
+        Array [
+          10,
+          10,
+          Array [
+            Array [
+              "whenIReceive",
+              "hide pusheen",
+            ],
+            Array [
+              "hide",
+            ],
+          ],
+        ],
+        Array [
+          41,
+          98,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+            Array [
+              "setGraphicEffect:to:",
+              "ghost",
+              50,
+            ],
+            Array [
+              "doForever",
+              Array [
+                Array [
+                  "setVar:to:",
+                  "factor",
+                  Array [
+                    "/",
+                    240,
+                    Array [
+                      "readVariable",
+                      "pancake z",
+                    ],
+                  ],
+                ],
+                Array [
+                  "gotoX:y:",
+                  Array [
+                    "*",
+                    Array [
+                      "getAttribute:of:",
+                      "x var",
+                      "me",
+                    ],
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                  Array [
+                    "*",
+                    Array [
+                      "getAttribute:of:",
+                      "y var",
+                      "me",
+                    ],
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                ],
+                Array [
+                  "setVar:to:",
+                  "size var",
+                  "1",
+                ],
+                Array [
+                  "setSizeTo:",
+                  Array [
+                    "*",
+                    Array [
+                      "*",
+                      60,
+                      Array [
+                        "readVariable",
+                        "size var",
+                      ],
+                    ],
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+        Array [
+          140,
+          371,
+          Array [
+            Array [
+              "-",
+              0.95,
+              Array [
+                "/",
+                Array [
+                  "-",
+                  Array [
+                    "readVariable",
+                    "pancake z",
+                  ],
+                  Array [
+                    "getAttribute:of:",
+                    "z var",
+                    "me",
+                  ],
+                ],
+                Array [
+                  "-",
+                  Array [
+                    "readVariable",
+                    "pancake z",
+                  ],
+                  240,
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+      "sounds": Array [
+        Object {
+          "format": "",
+          "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+          "rate": 11025,
+          "sampleCount": 258,
+          "soundID": 0,
+          "soundName": "pop",
+        },
+      ],
+      "spriteInfo": Object {},
+      "variables": Array [
+        Object {
+          "isPersistent": false,
+          "name": "factor",
+          "value": 0.4395604395604395,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "size var",
+          "value": "1",
+        },
+      ],
+      "visible": false,
+    },
+    Object {
+      "costumes": Array [
+        Object {
+          "baseLayerID": 7,
+          "baseLayerMD5": "96de692811f1301debabb688573b48d8.png",
+          "bitmapResolution": 2,
+          "costumeName": "nutella",
+          "rotationCenterX": 406,
+          "rotationCenterY": 256,
+        },
+      ],
+      "currentCostumeIndex": 0,
+      "direction": 90,
+      "indexInLibrary": 1,
+      "isDraggable": false,
+      "objName": "me",
+      "rotationStyle": "normal",
+      "scale": 0.8,
+      "scratchX": 142,
+      "scratchY": -119,
+      "scripts": Array [
+        Array [
+          10,
+          10,
+          Array [
+            Array [
+              "whenGreenFlag",
+            ],
+            Array [
+              "setVar:to:",
+              "vx",
+              "0",
+            ],
+            Array [
+              "setVar:to:",
+              "vy",
+              "0",
+            ],
+            Array [
+              "setVar:to:",
+              "vz",
+              "0",
+            ],
+            Array [
+              "setVar:to:",
+              "x var",
+              "100",
+            ],
+            Array [
+              "setVar:to:",
+              "y var",
+              "100",
+            ],
+            Array [
+              "setVar:to:",
+              "z var",
+              "240",
+            ],
+            Array [
+              "doForever",
+              Array [
+                Array [
+                  "doIf",
+                  Array [
+                    "mousePressed",
+                  ],
+                  Array [
+                    Array [
+                      "setVar:to:",
+                      "dx",
+                      Array [
+                        "-",
+                        Array [
+                          "/",
+                          Array [
+                            "mouseX",
+                          ],
+                          Array [
+                            "/",
+                            240,
+                            Array [
+                              "readVariable",
+                              "pancake z",
+                            ],
+                          ],
+                        ],
+                        Array [
+                          "readVariable",
+                          "x var",
+                        ],
+                      ],
+                    ],
+                    Array [
+                      "setVar:to:",
+                      "dy",
+                      Array [
+                        "-",
+                        Array [
+                          "/",
+                          Array [
+                            "mouseY",
+                          ],
+                          Array [
+                            "/",
+                            240,
+                            Array [
+                              "readVariable",
+                              "pancake z",
+                            ],
+                          ],
+                        ],
+                        Array [
+                          "readVariable",
+                          "y var",
+                        ],
+                      ],
+                    ],
+                    Array [
+                      "setVar:to:",
+                      "dist",
+                      Array [
+                        "computeFunction:of:",
+                        "sqrt",
+                        Array [
+                          "+",
+                          Array [
+                            "*",
+                            Array [
+                              "readVariable",
+                              "dx",
+                            ],
+                            Array [
+                              "readVariable",
+                              "dx",
+                            ],
+                          ],
+                          Array [
+                            "*",
+                            Array [
+                              "readVariable",
+                              "dy",
+                            ],
+                            Array [
+                              "readVariable",
+                              "dy",
+                            ],
+                          ],
+                        ],
+                      ],
+                    ],
+                    Array [
+                      "changeVar:by:",
+                      "vx",
+                      Array [
+                        "/",
+                        Array [
+                          "readVariable",
+                          "dx",
+                        ],
+                        Array [
+                          "readVariable",
+                          "dist",
+                        ],
+                      ],
+                    ],
+                    Array [
+                      "changeVar:by:",
+                      "vy",
+                      Array [
+                        "/",
+                        Array [
+                          "readVariable",
+                          "dy",
+                        ],
+                        Array [
+                          "readVariable",
+                          "dist",
+                        ],
+                      ],
+                    ],
+                  ],
+                ],
+                Array [
+                  "setVar:to:",
+                  "vx",
+                  Array [
+                    "*",
+                    0.95,
+                    Array [
+                      "readVariable",
+                      "vx",
+                    ],
+                  ],
+                ],
+                Array [
+                  "setVar:to:",
+                  "vy",
+                  Array [
+                    "*",
+                    0.95,
+                    Array [
+                      "readVariable",
+                      "vy",
+                    ],
+                  ],
+                ],
+                Array [
+                  "changeVar:by:",
+                  "vz",
+                  1,
+                ],
+                Array [
+                  "doIf",
+                  Array [
+                    ">",
+                    Array [
+                      "readVariable",
+                      "z var",
+                    ],
+                    Array [
+                      "readVariable",
+                      "pancake z",
+                    ],
+                  ],
+                  Array [
+                    Array [
+                      "setVar:to:",
+                      "z var",
+                      Array [
+                        "readVariable",
+                        "pancake z",
+                      ],
+                    ],
+                    Array [
+                      "doIf",
+                      Array [
+                        ">",
+                        Array [
+                          "readVariable",
+                          "vz",
+                        ],
+                        "0",
+                      ],
+                      Array [
+                        Array [
+                          "setVar:to:",
+                          "vz",
+                          "-26",
+                        ],
+                      ],
+                    ],
+                    Array [
+                      "broadcast:",
+                      "splat",
+                    ],
+                  ],
+                ],
+                Array [
+                  "changeVar:by:",
+                  "x var",
+                  Array [
+                    "readVariable",
+                    "vx",
+                  ],
+                ],
+                Array [
+                  "changeVar:by:",
+                  "y var",
+                  Array [
+                    "readVariable",
+                    "vy",
+                  ],
+                ],
+                Array [
+                  "changeVar:by:",
+                  "z var",
+                  Array [
+                    "readVariable",
+                    "vz",
+                  ],
+                ],
+                Array [
+                  "setVar:to:",
+                  "factor",
+                  Array [
+                    "/",
+                    240,
+                    Array [
+                      "readVariable",
+                      "z var",
+                    ],
+                  ],
+                ],
+                Array [
+                  "gotoX:y:",
+                  Array [
+                    "*",
+                    Array [
+                      "readVariable",
+                      "x var",
+                    ],
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                  Array [
+                    "*",
+                    Array [
+                      "readVariable",
+                      "y var",
+                    ],
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                ],
+                Array [
+                  "setSizeTo:",
+                  Array [
+                    "*",
+                    60,
+                    Array [
+                      "readVariable",
+                      "factor",
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+        Array [
+          10,
+          855,
+          Array [
+            Array [
+              "whenIReceive",
+              "hide pusheen",
+            ],
+            Array [
+              "hide",
+            ],
+          ],
+        ],
+        Array [
+          10,
+          921,
+          Array [
+            Array [
+              "whenIReceive",
+              "show pusheen",
+            ],
+            Array [
+              "show",
+            ],
+          ],
+        ],
+      ],
+      "sounds": Array [
+        Object {
+          "format": "",
+          "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+          "rate": 11025,
+          "sampleCount": 258,
+          "soundID": 0,
+          "soundName": "pop",
+        },
+      ],
+      "spriteInfo": Object {},
+      "variables": Array [
+        Object {
+          "isPersistent": false,
+          "name": "x var",
+          "value": 117.71094194368412,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "z var",
+          "value": 250,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "y var",
+          "value": -137.83545292656532,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "vx",
+          "value": 0.896176608136712,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "vy",
+          "value": -0.38143558342855255,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "vz",
+          "value": -11,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "factor",
+          "value": 0.96,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "dist",
+          "value": 297.11877871125876,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "dx",
+          "value": 287.0424668059766,
+        },
+        Object {
+          "isPersistent": false,
+          "name": "dy",
+          "value": -76.72151531878,
+        },
+      ],
+      "visible": true,
+    },
+  ],
+  "costumes": Array [
+    Object {
+      "baseLayerID": 8,
+      "baseLayerMD5": "b61b1077b0ea1931abee9dbbfa7903ff.png",
+      "bitmapResolution": 2,
+      "costumeName": "backdrop1",
+      "rotationCenterX": 480,
+      "rotationCenterY": 360,
+    },
+    Object {
+      "baseLayerID": 9,
+      "baseLayerMD5": "2cc979913fa85e371f6cb7c01a1e3cc0.svg",
+      "bitmapResolution": 1,
+      "costumeName": "pancake",
+      "rotationCenterX": 221,
+      "rotationCenterY": 204,
+    },
+    Object {
+      "baseLayerID": 10,
+      "baseLayerMD5": "debe410daf94abe34558c4a83250ca72.png",
+      "bitmapResolution": 2,
+      "costumeName": "7085707045_34a78a8c86_m",
+      "rotationCenterX": 480,
+      "rotationCenterY": 360,
+    },
+  ],
+  "currentCostumeIndex": 1,
+  "info": Object {
+    "flashVersion": "MAC 24,0,0,174",
+    "scriptCount": 13,
+    "spriteCount": 5,
+    "swfVersion": "v450",
+    "userAgent": "Scratch 2.0 Offline Editor",
+    "videoOn": false,
+  },
+  "objName": "Stage",
+  "penLayerID": 0,
+  "penLayerMD5": "5c81a336fab8be57adc039a8a2b33ca9.png",
+  "scripts": Array [
+    Array [
+      39,
+      105,
+      Array [
+        Array [
+          "playSound:",
+          "pop",
+        ],
+      ],
+    ],
+    Array [
+      35,
+      172,
+      Array [
+        Array [
+          "stopAllSounds",
+        ],
+      ],
+    ],
+  ],
+  "sounds": Array [
+    Object {
+      "format": "",
+      "md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+      "rate": 11025,
+      "sampleCount": 258,
+      "soundID": 0,
+      "soundName": "pop",
+    },
+  ],
+  "tempoBPM": 60,
+  "variables": Array [
+    Object {
+      "isPersistent": false,
+      "name": "pancake z",
+      "value": 546,
+    },
+    Object {
+      "isPersistent": false,
+      "name": "jUMPS",
+      "value": 3,
+    },
+  ],
+  "videoAlpha": 0.5,
+}
+`;

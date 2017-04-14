@@ -25,12 +25,8 @@ describe('load/save', () => {
       return Project.load(zip)
       .then(Project.save)
       .then(toshZip => {
-        return Promise.all([
-          JSON.parse(zip.file('project.json').asText()),
-          JSON.parse(toshZip.file('project.json').asText()),
-        ]).then(([json, toshJson]) => {
-          expect(json).toEqual(toshJson)
-        })
+        const json = JSON.parse(zip.file('project.json').asText())
+        expect(json).toMatchSnapshot()
       })
     })
   })

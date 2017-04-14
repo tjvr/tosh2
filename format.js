@@ -1,4 +1,5 @@
 'use strict'
+const itt = require('itt')
 const Model = require('v2/model/model')
 const List = require('v2/model/list')
 
@@ -85,19 +86,11 @@ class Stage extends Scriptable {
 
   toJSON(ctx) {
     const json = super.toJSON(ctx)
-    json.info.spriteCount = this.sprites.length
-    json.info.scriptCount = this.scriptCount
+    json.info.spriteCount = this.sprites.length - 1 // exclude stage
+    json.info.scriptCount = itt.sum(itt(this.sprites).map(s => s.scripts.length))
     //delete json.info.swfVersion
     //delete json.info.flashVersion
     return json
-  }
-  get scriptCount() {
-    var count = 0
-    count += this.scripts.length
-    for (const sprite of this.sprites) {
-      count += sprite.scripts.length
-    }
-    return count
   }
 
   get children() { return this._children }
