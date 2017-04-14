@@ -18,9 +18,9 @@ require('codemirror/addon/runmode/runmode')
 require('codemirror/keymap/vim')
 require('codemirror/keymap/emacs')
 
-const Nearley = require('nearley')
+const nearley = require('nearley')
 const generate = require('./reverse')
-const grammar = Nearley.Grammar.fromCompiled(require('./grammar'))
+const grammar = nearley.Grammar.fromCompiled(require('./grammar'))
 const Scratch = require('../scratch')
 const mode = require('./mode')
 
@@ -63,23 +63,36 @@ class Editor extends View {
 
   generate() {
     const scripts = this.model.scripts.map(([x, y, blocks]) => blocks)
-    console.log(scripts)
-    this.cm.doc.setValue(generate(scripts))
+    return generate(scripts)
   }
 
   compile() {
+    const model = this._model
+    const parser = new nearley.Parser(grammar)
+    try {
+      parser.feed(this.cm.getValue())
+    } catch (e) {
+      model.scripts = {error: e}
+      return
+    }
+    const results = parser.results
+    if (results.length > 1) throw new Error("Ambiguous!")
+    model.scripts = results[0]
   }
 
   // TODO bind to sprite
   _listen() {
-    if (this.model._history) this.cm.doc.setHistory(this.model._history)
+    const model = this._model
+    this.cm.setValue(model._source = model._source || this.generate())
+    if (model._history) this.cm.doc.setHistory(model._history)
     else this.cm.doc.clearHistory()
-    this.generate()
-    this._model.on('change', this._changed)
+    model.on('change', this._changed)
   }
   _unlisten() {
-    this._model.unlisten('change', this._changed)
-    this._model._history = this.cm.doc.getHistory()
+    const model = this._model
+    model.unlisten('change', this._changed)
+    model._history = this.cm.doc.getHistory()
+    model._source = this.cm.getValue()
     this.compile()
   }
   _changed() {
