@@ -5,7 +5,7 @@ const reverse = require('nearley-reverse')
 
 function generate(scripts) {
   const tokens = reverse(grammar, scripts)
-  return tokens.map(x =>
+  return tokens && tokens.map(x =>
     typeof x === 'string' ? x :
     x.type === 'NL' ? '\n' :
     x.type === 'WS' ? ' ' :

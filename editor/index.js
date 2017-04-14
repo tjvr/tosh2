@@ -65,7 +65,8 @@ class Editor extends View {
   generate() {
     // TODO sort scripts by y position
     const scripts = this.model.scripts.map(([x, y, blocks]) => blocks)
-    return generate(scripts)
+    const source = generate(scripts)
+    return typeof source === 'string' ? source : "error!"
   }
 
   compile() {
