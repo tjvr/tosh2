@@ -631,3 +631,42 @@ li.CodeMirror-hint-active {
 }
 
 /*****************************************************************************/
+
+.cm-s-green { color: #488d00; }
+
+.cm-s-sensing { color: #2ca5e2; }
+.cm-s-motion { color: #3e79e0; }
+.cm-s-parameter { color: #4a2ed2; }
+.cm-s-custom { color: #400e75; }
+.cm-s-looks { color: #7a48c3; }
+.cm-s-sound { color: #bb42c3; }
+.cm-s-operators { color: #4da009; }
+.cm-s-pen { color: #0e9a6c; }
+.cm-s-control, .cm-false { color: #e1a91a; }
+.cm-s-events { color: #b17125; }
+.cm-s-variable { color: #e46d00; }
+.cm-s-list { color: #b14914; }
+.cm-s-error { color: #ff3372; }
+.cm-s-extension { color: #4b4a60; }
+.cm-s-grey { color: #888; }
+
+.bg-motion { background: #4a6cd4; }
+.bg-looks { background: #8a55d7; }
+.bg-sound { background: #bb42c3; }
+.bg-pen { background: #0e9a6c; }
+.bg-events { background: #c88330; }
+.bg-control, .cm-false { background: #e1a91a; }
+.bg-sensing { background: #2ca5e2; }
+.bg-operators { background: #5cb712; }
+.bg-variable { background: #ee7d16; }
+.bg-custom { background: #632d99; }
+
+.cm-number { color: #4548af !important; }
+.cm-string { color: #904949; }
+.cm-escape { color: #ffadd1; }
+.cm-color { color: #b09542; }
+.cm-comment {
+  color: #c8b898;
+  text-decoration: strikethrough;
+}
+

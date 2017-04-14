@@ -152,9 +152,11 @@ const commands = {
   "readVariable": {category: "variable", shape: "reporter", spec: "%m.var"},
   "contentsOfList:": {category: "list", shape: "reporter", spec: "%m.list"},
   "getParam": {category: "parameter", shape: "predicate", spec: "%m.param"},
-  //"else": {category: "control", shape: "else", spec: "else"},
-  //"end": {category: "control", shape: "end", spec: "end"},
-  //"ellips": {category: "grey", shape: "ellips", spec: "..."},
+
+  // TODO
+  "else": {category: "control", shape: "else", spec: "else"},
+  "end": {category: "control", shape: "end", spec: "end"},
+  "ellips": {category: "grey", shape: "ellips", spec: "..."},
 }
 
 for (const selector of Object.keys(commands)) {

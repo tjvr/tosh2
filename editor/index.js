@@ -21,6 +21,7 @@ require('codemirror/keymap/emacs')
 const Nearley = require('nearley')
 const reverse = require('nearley-reverse')
 const grammar = Nearley.Grammar.fromCompiled(require('./grammar'))
+const Scratch = require('../scratch')
 const mode = require('./mode')
 
 
@@ -151,6 +152,15 @@ Editor.prototype.cmOptions = {
   mode: {
     name: 'tosh',
     grammar,
+    highlight: rule => {
+      switch (rule.name) {
+        case '_greenFlag': return 's-green'
+        case 'b0': return 'false'
+      }
+      const factory = rule.postprocess
+      const selector = factory && factory.selector
+      return selector && 's-' + Scratch.blockInfo([selector]).category
+    },
   },
 
   indentUnit: 3,

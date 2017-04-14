@@ -72,7 +72,7 @@ function select(index) {
 }
 
 function block(selector, ...rest) {
-  return factory(function decode(...children) {
+  const f = factory(function decode(...children) {
     var args = [selector]
     rest.forEach(childIndex => {
       args.push(children[childIndex])
@@ -86,6 +86,8 @@ function block(selector, ...rest) {
     })
     return children
   })
+  f.selector = selector
+  return f
 }
 
 function isNumber(x) {

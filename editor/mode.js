@@ -52,108 +52,33 @@ class Highlighter {
     return new Range(start, end, className)
   }
 
-  _collect(item, end, seen, out, allowPartial) {
-    if (!item) return
-    if (seen.has(item)) return
-    seen.add(item)
-
-    let range = this._getRange(item, end, allowPartial)
-    if (range) out.push(range)
-
-    if (!item.right) return
-    let split = item.right.start.index
-    this._collect(item.left, split, seen, out)
-    this._collect(item.right, end, seen, out, allowPartial)
+  _ranges(state, className, emit) {
+    if (state.isToken) {
+      emit(className, state.token)
+    } else if (state.left) {
+      var className = this.getClass(state.rule) || className
+      this._ranges(state.left, className, emit)
+      if (!state.right) console.error(state)
+      this._ranges(state.right, className, emit)
+    } else {
+      return
+    }
   }
 
-  _ranges(start, end) {
-    let columns = this.columns
-    console.log(columns)
-    var index = Math.min(end, columns.length - 1)
-    var column = columns[index]
-    if (!column) return
-    // TODO figure out how to make this work without `unique`
-    var span = column.unique[start]
-    if (!span) return
-
-    let seen = new Set()
-    let ranges = []
-    for (let item of span.values()) {
-      if (!item.rule) continue
-      this._collect(item, index, seen, ranges, true)
+  highlight(startCol, endCol, emit) {
+    const state = endCol.states.find(s => s.reference === startCol.index)
+    if (!state) {
+      const size = endCol.index - startCol.index
+      emit('error', {offset: 0, size: size})
+      return
     }
-    return ranges
-  }
-
-  highlight(start, end) {
-    var start = start.index
-    var end = end.index
-    if (!this.columns[start]) {
-      return [new Range(start, end, 'error')]
-    }
-
-    var ranges = this._ranges(start, end)
-    let index = end
-    while (!ranges && index > 0) {
-      ranges = this._ranges(start, --index)
-    }
-
-    let pointsSet = new Set()
-    ranges.forEach(range => {
-      pointsSet.add(range.start)
-      pointsSet.add(range.end)
-      ranges.push(range)
-    })
-
-    // longest ranges first
-    ranges.sort((a, b) => {
-      return b.size() - a.size()
-    })
-
-    // partial parses should not be tagged
-    if (index < end) {
-      pointsSet.add(index)
-      ranges.push(new Range(index, end, ''))
-    }
-
-    // otherwise, default to 'error'
-    ranges.unshift(new Range(start, end, 'error'))
-
-    // clean up boundaries
-    pointsSet.add(start)
-    if (pointsSet.has(end)) pointsSet.delete(end)
-
-    // split on each range boundary
-    let points = Array.from(pointsSet).sort((a, b) => a - b)
-    let classes = {}
-    points.forEach(index => {
-      classes[index] = ""
-    })
-
-    // color between points using ranges. shortest range wins
-    ranges.forEach(range => {
-      let rangeStart = Math.max(start, range.start)
-      let rangeEnd = Math.min(end, range.end)
-      for (var index = rangeStart; index < rangeEnd; index++) {
-        if (index in classes) {
-          classes[index] = range.className
-        }
-      }
-    })
-
-    // put the ranges together
-    return points.map((regionStart, index) => {
-      let regionEnd = points[index + 1] || end
-      return new Range(regionStart, regionEnd, classes[regionStart])
-    })
+    this._ranges(state, "", emit)
   }
 }
 
 class Completer {
   constructor(grammar, options) {
-    this.parser = new nearley.Parser(grammar, {
-      keepHistory: true,
-    })
+    this.parser = new nearley.Parser(grammar)
     //this.reverseParser = new nearley.Parser(grammar.reverse(), options)
     this.highlighter = new Highlighter(this.parser, options.highlight)
     this.history = []
@@ -188,57 +113,53 @@ CodeMirror.defineMode('tosh', function(cfg, modeCfg) {
     }
 
     copy() {
-      return new State(this.column)
+      const s = new State(this.column)
+      s.highlight('\n')
+      return s
     }
 
     highlight(line) {
-      let start = this.column
-      completer.restore(start)
+      const startCol = this.column
+      completer.restore(startCol)
 
       // TODO handle previous error
-
       try {
         completer.feed(line)
       } catch (e) {
-        console.error('err', e)
-        // oh dear
+        //console.error('err', e)
+        return [{className: 'error', text: line}]
       }
-      console.log(completer.parser.results.length, 'results')
-      console.log('=>', JSON.stringify(completer.parser.results[0]))
-      let end = this.column = completer.save()
-      // if (error) {
-      //   console.error(error)
-      // }
+      const endCol = this.column = completer.save()
 
-      return [{className: 'string', text: line}]
-      //let ranges = completer.highlight(start, end)
+      //console.log('=>', JSON.stringify(completer.parser.results[0]))
 
-      //return ranges.map(range => {
-      //  let className = range.className
-      //  let rangeStart = range.start - start
-      //  let rangeEnd = range.end - start
-      //  let text = line.slice(rangeStart, rangeEnd)
-      //  return { className, text }
-      //})
+      const ranges = []
+      completer.highlight(startCol, endCol, (className, token) => {
+        ranges.push({
+          className: className + ' ' + token.type,
+          text: line.substr(token.offset, token.size),
+        })
+      })
+      return ranges
     }
 
     next(stream) {
       // this.indent = stream.indentation()
 
       if (!this.line.length) {
-        if (this.column.index > 0) {
-          this.highlight('\n')
-        }
         let m = stream.match(/.*/, false) // don't consume
         this.line = this.highlight(m[0])
+        if (!this.line.length) throw new Error('panic')
       }
 
-      let token = this.line.shift()
-      if (!stream.match(token.text)) { // consume
-        console.error(token)
+      //console.log(JSON.stringify(this.line.map(x => x.text)))
+
+      let range = this.line.shift()
+      if (!stream.match(range.text)) { // consume
+        console.error(range)
         throw new Error("Does not match stream")
       }
-      return token.className
+      return range.className
     }
   }
 
