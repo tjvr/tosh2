@@ -125,9 +125,9 @@ var string = factory(function decodeString(...d) {
 })
 
 var push2 = factory((a, _, c) => {
-    a = a.slice()
-    a.push(c)
-    return a
+  a = a.slice()
+  a.push(c)
+  return a
 }, s => {
   if (s.length < 2) return false
   var s = s.slice()
@@ -136,7 +136,7 @@ var push2 = factory((a, _, c) => {
 })
 
 var box = factory(s => {
-    return [s]
+  return [s]
 }, d => {
   if (d.length !== 1) return false
   return [d[0]]
@@ -423,8 +423,8 @@ d_note -> n {% id %}
 m_attribute -> jpart {% id %}
 
 block -> "move" __ n __ "steps" {% block("forward:", 2) %}
-       | "turn" __ _turnRight __ n __ "degrees" {% block("turnRight:", 2, 4) %}
-       | "turn" __ _turnLeft __ n __ "degrees" {% block("turnLeft:", 2, 4) %}
+       | "turn" __ _turnRight __ n __ "degrees" {% block("turnRight:", 4) %}
+       | "turn" __ _turnLeft __ n __ "degrees" {% block("turnLeft:", 4) %}
        | "point" __ "in" __ "direction" __ d_direction {% block("heading:", 6) %}
        | "point" __ "towards" __ m_spriteOrMouse {% block("pointTowards:", 4) %}
        | "go" __ "to" __ "x:" __ n __ "y:" __ n {% block("gotoX:y:", 6, 10) %}
@@ -475,7 +475,7 @@ block -> "move" __ n __ "steps" {% block("forward:", 2) %}
        | "set" __ "pen" __ "shade" __ "to" __ n {% block("setPenShadeTo:", 8) %}
        | "change" __ "pen" __ "size" __ "by" __ n {% block("changePenSizeBy:", 8) %}
        | "set" __ "pen" __ "size" __ "to" __ n {% block("penSize:", 8) %}
-       | "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag", 2) %}
+       | "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
        | "when" __ m_key __ "key" __ "pressed" {% block("whenKeyPressed", 2) %}
        | "when" __ "this" __ "sprite" __ "clicked" {% block("whenClicked") %}
        | "when" __ "backdrop" __ "switches" __ "to" __ m_backdrop {% block("whenSceneStarts", 8) %}

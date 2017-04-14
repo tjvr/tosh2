@@ -64,6 +64,7 @@ describe('parse', () => {
 
 })
 
+
 describe('generate', () => {
 
   const generate = require('../editor/reverse.js')
@@ -98,7 +99,6 @@ describe('generate', () => {
   test('scripts', () => {
     check('stamp\n\nstamp')
   })
-
 
 })
 

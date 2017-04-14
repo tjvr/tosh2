@@ -179,10 +179,11 @@ CodeMirror.defineMode('tosh', function(cfg, modeCfg) {
     highlight: modeCfg.highlight, // getClass
   })
   completer.feed("")
+  const startColumn = completer.save()
 
   class State {
-    constructor(column=null) {
-      this.column = column || completer.save()
+    constructor(column) {
+      this.column = column
       this.line = []
     }
 
@@ -234,7 +235,8 @@ CodeMirror.defineMode('tosh', function(cfg, modeCfg) {
 
       let token = this.line.shift()
       if (!stream.match(token.text)) { // consume
-        throw "Does not match stream: " + token
+        console.error(token)
+        throw new Error("Does not match stream")
       }
       return token.className
     }
@@ -244,7 +246,7 @@ CodeMirror.defineMode('tosh', function(cfg, modeCfg) {
   /* CodeMirror mode */
 
   return {
-    startState: () => new State(),
+    startState: () => new State(startColumn),
     copyState: state => state.copy(),
     token: (stream, state) => state.next(stream),
     blankLine: state => {
