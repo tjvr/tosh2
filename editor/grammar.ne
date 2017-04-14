@@ -4,7 +4,7 @@
 const moo = require('moo')
 
 let lexer = moo.compile([
-  {name: 'NL',      match: '\n'},
+  {name: 'NL',      match: '\n', lineBreaks: true },
   {name: 'WS',      match: /[ \t]+/},
   {name: 'ellips',  match: /\.{3}/},
   {name: 'comment', match: /\/{2}(.*)$/},
@@ -29,7 +29,6 @@ let lexer = moo.compile([
   {name: 'symbol',  match: /[-%#+*/=^,?]/},                // single character
   {name: 'symbol',  match: /[_A-Za-z][-_A-Za-z0-9:',.]*/}, // word, as in a block
   {name: 'iden',    match: /[^\n \t"'()<>=*\/+-]+/},     // user-defined names
-  {name: 'NL',      match: /\n/, lineBreaks: true },
   {name: 'ERROR',   error: true},
 ])
 

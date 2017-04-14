@@ -222,13 +222,25 @@ body {
 .fs #wrap {
   top: 0;
 }
-.fs #menu,
+.fs .v2-view {
+  display: block;
+  position: relative;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.fs .v2-menu,
 .fs .tab-bar,
 .fs .sidebar,
-.fs .editor,
+.fs .tosh-editor,
 .fs .container,
 .fs .small-stage {
   display: none;
+}
+.fs .tosh-player-wrap {
+  min-width: none;
+  max-width: none;
 }
 .fs #phosphorus {
   position: static;

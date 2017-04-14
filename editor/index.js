@@ -92,7 +92,6 @@ class Editor extends View {
     model.scripts = scripts
   }
 
-  // TODO bind to sprite
   _listen() {
     const model = this._model
     this.cm.setValue(model._source = model._source || this.generate())

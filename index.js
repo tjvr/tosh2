@@ -89,7 +89,7 @@ class ToshApp extends App {
   }
 
   saveProject() {
-    editor.compile()
+    if (!this.compile()) return
     const zip = Project.save(this.model.project)
     const blob = zip.generate({type: 'blob'})
     rt.saveFile(blob, this.model.name, {
@@ -98,8 +98,13 @@ class ToshApp extends App {
   }
 
   flagClick() {
-    editor.compile()
+    if (!this.compile()) return
     player.sendProject(this.model.project)
+  }
+
+  compile() {
+    editor.compile()
+    return true
   }
 
   leavePlayer() {

@@ -35,7 +35,7 @@ class Player extends View {
 
   build() {
     return h('.v2-view.tosh-preview', {id: 'phosphorus'}, [
-      h('.controls', [
+      this.controls = h('.controls', [
         h('.progress-bar'),
         this.stop = h('span.stop'),
         this.pause = h('span.pause'),
@@ -154,9 +154,9 @@ class Player extends View {
       window.scrollTo(0, 0)
       var padding = 8
       var w = window.innerWidth - padding * 2
-      var h = window.innerHeight - padding - controls.offsetHeight
+      var h = window.innerHeight - padding - this.controls.offsetHeight
       w = Math.min(w, h / .75)
-      h = w * .75 + controls.offsetHeight
+      h = w * .75 + this.controls.offsetHeight
       document.body.style.width = w + 'px'
       document.body.style.height = h + 'px'
       document.body.style.marginLeft = (window.innerWidth - w) / 2 + 'px'
