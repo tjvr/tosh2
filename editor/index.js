@@ -19,7 +19,7 @@ require('codemirror/keymap/vim')
 require('codemirror/keymap/emacs')
 
 const Nearley = require('nearley')
-const reverse = require('nearley-reverse')
+const generate = require('./reverse')
 const grammar = Nearley.Grammar.fromCompiled(require('./grammar'))
 const Scratch = require('../scratch')
 const mode = require('./mode')
@@ -41,11 +41,11 @@ class Editor extends View {
   }
 
   get model() {return this._model}
-  set model(value) {
-    if (this._model === value) return
+  set model(sprite) {
+    if (this._model === sprite) return
     // TODO save pending changes
     if (this._model && this.isLive) this._unlisten()
-    this._model = value
+    this._model = sprite
     if (this.isLive) {
       if (this._model) this._listen()
       this._layout()
@@ -61,11 +61,29 @@ class Editor extends View {
     if (this._model) this._unlisten()
   }
 
+  generate() {
+    const scripts = this.model.scripts.map(([x, y, blocks]) => blocks)
+    console.log(scripts)
+    this.cm.doc.setValue(generate(scripts))
+  }
+
+  compile() {
+  }
+
   // TODO bind to sprite
-  _listen() {this._model.on('change', this._changed)}
-  _unlisten() {this._model.unlisten('change', this._changed)}
+  _listen() {
+    if (this.model._history) this.cm.doc.setHistory(this.model._history)
+    else this.cm.doc.clearHistory()
+    this.generate()
+    this._model.on('change', this._changed)
+  }
+  _unlisten() {
+    this._model.unlisten('change', this._changed)
+    this._model._history = this.cm.doc.getHistory()
+    this.compile()
+  }
   _changed() {
-    // TODO this.model.scripts
+    // TODO this.model.scripts ?
   }
 
   resize() { this._layout() }

@@ -76,11 +76,13 @@ describe('generate', () => {
   }
 
   function checkScript(text, script) {
-    checkFile(text, script ? [script] : parseScript(text))
+    if (!script) script = parseScript(text)
+    checkFile(text, [script])
   }
 
   function checkBlock(text, block) {
-    checkScript(text, block ? [block] : parseBlock(text))
+    if (!block) block = parseBlock(text)
+    checkScript(text, [block])
   }
 
   test('block', () => {
@@ -117,6 +119,15 @@ describe('generate', () => {
     checkBlock('repeat until <>\nend', ['doUntil', false, null])
     checkBlock('forever\nend', ['doForever', null])
   })
+
+  test('test script', () => {
+    checkScript('when flag clicked\npen down\nmove 10 steps\nturn cw 9 degrees')
+  })
+
+  test('empty file', () => {
+    checkFile('', [])
+  })
+
 
 })
 

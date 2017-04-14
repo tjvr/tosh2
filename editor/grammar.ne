@@ -144,12 +144,20 @@ var box = factory(s => {
   return [d[0]]
 })
 
+var emptyList = factory(() => [], d => {
+  if (Array.isArray(d) && d.length === 0) {
+    return []
+  }
+  return false
+})
+
 const empty = []
 var ignore = factory(a => null, _ => empty)
 
 %}
 
-file -> padding scripts padding  {% select(1) %}
+file -> padding {% emptyList %}
+      | padding scripts padding  {% select(1) %}
 
 padding -> (%WS | %NL):*  {% ignore %}
 
@@ -425,7 +433,7 @@ d_note -> n {% id %}
 m_attribute -> jpart {% id %}
 
 
-block -> hat
+block -> hat {% id %}
 hat   -> "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
        | "when" __ m_key __ "key" __ "pressed" {% block("whenKeyPressed", 2) %}
        | "when" __ "this" __ "sprite" __ "clicked" {% block("whenClicked") %}
