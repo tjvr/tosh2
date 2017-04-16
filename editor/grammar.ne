@@ -8,9 +8,9 @@ let lexer = moo.compile([
   {name: 'WS',      match: /[ \t]+/},
   {name: 'ellips',  match: /\.{3}/},
   {name: 'comment', match: /\/{2}(.*)$/},
-  {name: 'false',   match: /\<\>/},
-  {name: 'zero',    match: /\(\)/},
-  {name: 'empty',   match: /_( |$)/},
+  {name: 'false',   match: '<>'},
+  {name: 'zero',    match: '()'},
+  {name: 'empty',   match: '_'},
   {name: 'number',  match: /([0-9]+(?:\.[0-9]+)?e-?[0-9]+)/}, // 123[.123]e[-]123
   {name: 'number',  match: /((?:0|[1-9][0-9]*)?\.[0-9]+)/},   // [123].123
   {name: 'number',  match: /((?:0|[1-9][0-9]*)\.[0-9]*)/},    // 123.[123]
@@ -18,12 +18,14 @@ let lexer = moo.compile([
   {name: 'color',   match: /#([A-Fa-f0-9]{3}(?:[A-Fa-f0-9]{3})?)/},
   {name: 'string',  match: /"((?:\\["\\]|[^\n"\\])*)"/}, // strings are backslash-escaped
   {name: 'string',  match: /'((?:\\['\\]|[^\n'\\])*)'/},
-  {name: 'lparen',  match: /\(/},
-  {name: 'rparen',  match: /\)/},
-  {name: 'langle',  match: /\</},
-  {name: 'rangle',  match: /\>/},
-  {name: 'lsquare', match: /\[/},
-  {name: 'rsquare', match: /\]/},
+  {name: 'lparen',  match: '('},
+  {name: 'rparen',  match: ')'},
+  {name: 'langle',  match: '<'},
+  {name: 'rangle',  match: '>'},
+  {name: 'lsquare', match: '['},
+  {name: 'rsquare', match: ']'},
+  {name: '{',       match: '{'},
+  {name: '}',       match: '}'},
   {name: 'cloud',   match: /[☁]/},
   {name: 'input',   match: /%[a-z](?:\.[a-zA-Z]+)?/},
   {name: 'symbol',  match: /[-%#+*/=^,?]/},                // single character
@@ -441,17 +443,17 @@ hat   -> "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
        | "when" __ "I" __ "receive" __ m_broadcast {% block("whenIReceive", 6) %}
        | "when" __ "I" __ "start" __ "as" __ "a" __ "clone" {% block("whenCloned") %}
 
-mouth -> %NL script %NL end  {% select(1) %}
-       | %NL end             {% literal(null) %}
+mouth -> "{" %NL script %NL "}"  {% select(2) %}
+       | "{" %NL "}"             {% literal(null) %}
 
-elsemouth -> %NL script %NL else  {% select(1) %}
-           | %NL else             {% literal(null) %}
+elsemouth -> "{" %NL script %NL "}" __ else __  {% select(2) %}
+           | "{" %NL "}" __ else __             {% literal(null) %}
 
-block -> "repeat" __ n _ mouth  {% block("doRepeat", 2, 4) %}
-       | "if" __ b __ "then" _ mouth {% block("doIf", 2, 6) %}
-       | "if" __ b __ "then" _ elsemouth mouth {% block("doIfElse", 2, 6, 7) %}
-       | "forever" _ mouth {% block("doForever", 2) %}
-       | "repeat" __ "until" __ b _ mouth {% block("doUntil", 4, 6) %}
+block -> "repeat" __ n __ mouth  {% block("doRepeat", 2, 4) %}
+       | "if" __ b __ "then" __ mouth {% block("doIf", 2, 6) %}
+       | "if" __ b __ "then" __ elsemouth mouth {% block("doIfElse", 2, 6, 7) %}
+       | "forever" __ mouth {% block("doForever", 2) %}
+       | "repeat" __ "until" __ b __ mouth {% block("doUntil", 4, 6) %}
 
 block -> "move" __ n __ "steps" {% block("forward:", 2) %}
        | "turn" __ _turnRight __ n __ "degrees" {% block("turnRight:", 4) %}

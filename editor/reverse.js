@@ -2,18 +2,33 @@
 const nearley = require('nearley')
 const grammar = nearley.Grammar.fromCompiled(require('../editor/grammar'))
 const reverse = require('nearley-reverse')
+const itt = require('itt')
+
+const str = JSON.stringify
 
 function generate(scripts) {
   const tokens = reverse(grammar, scripts)
-  return tokens && tokens.map(x =>
-    typeof x === 'string' ? x :
-    x.type === 'NL' ? '\n' :
-    x.type === 'WS' ? ' ' :
-    x.type === 'string' ? JSON.stringify(x.value) :
-    x.value ? x.value :
-    JSON.stringify(x)
-  ).join("")
+  var indent = 0
+  var out = ''
+  var last
+  for (let [token, next] of itt(tokens).lookahead()) {
+    if (next === '}') indent--
+    if (token === '{') indent++
+    if (typeof token === 'string') { out += token; continue }
+    switch (token.type) {
+      case 'NL':
+        out += '\n'
+        for (var i=indent; i--; ) out += '\t'
+        continue
+      case 'WS': out += ' '; continue
+      case 'string': out += str(token.value); continue
+      default:
+        if (token.value) { out += token.value; continue }
+        throw new Error("Can't generate: " + token)
+    }
+  }
+  return out
 }
 
 module.exports = generate
-  
+

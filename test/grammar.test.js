@@ -105,23 +105,30 @@ describe('generate', () => {
   })
 
   test('c-blocks', () => {
-    checkBlock('repeat 10\nstamp\nend', ['doRepeat', 10, [['stampCostume']]])
-    checkBlock('if <> then\nstamp\nend', ['doIf', false, [['stampCostume']]])
-    checkBlock('if <> then\nshow\nelse\nhide\nend', ['doIfElse', false, [['show']], [['hide']]])
-    checkBlock('repeat until <>\nif on edge, bounce\nend', ['doUntil', false, [['bounceOffEdge']]])
-    checkBlock('forever\nhide\nend', ['doForever', [['hide']]])
+    checkBlock('repeat 10 {\n\tstamp\n}', ['doRepeat', 10, [['stampCostume']]])
+    checkBlock('if <> then {\n\tstamp\n}', ['doIf', false, [['stampCostume']]])
+    checkBlock('if <> then {\n\tshow\n} else {\n\thide\n}', ['doIfElse', false, [['show']], [['hide']]])
+    checkBlock('repeat until <> {\n\tif on edge, bounce\n}', ['doUntil', false, [['bounceOffEdge']]])
+    checkBlock('forever {\n\thide\n}', ['doForever', [['hide']]])
   })
 
   test('empty c-blocks', () => {
-    checkBlock('repeat 10\nend', ['doRepeat', 10, null])
-    checkBlock('if <> then\nend', ['doIf', false, null])
-    checkBlock('if <> then\nelse\nend', ['doIfElse', false, null, null])
-    checkBlock('repeat until <>\nend', ['doUntil', false, null])
-    checkBlock('forever\nend', ['doForever', null])
+    checkBlock('repeat 10 {\n}', ['doRepeat', 10, null])
+    checkBlock('if <> then {\n}', ['doIf', false, null])
+    checkBlock('if <> then {\n} else {\n}', ['doIfElse', false, null, null])
+    checkBlock('repeat until <> {\n}', ['doUntil', false, null])
+    checkBlock('forever {\n}', ['doForever', null])
   })
 
   test('test script', () => {
     checkScript('when flag clicked\npen down\nmove 10 steps\nturn cw 9 degrees')
+    checkScript(`when flag clicked
+go to x: 0 y: 0
+pen down
+forever {
+	move 10 steps
+	turn cw 10 degrees
+}`)
   })
 
   test('empty file', () => {
