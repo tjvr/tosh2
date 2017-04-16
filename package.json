@@ -13,7 +13,7 @@
     "watch": "prcl -w index.js app/parcel.js",
     "server": "http-server -s",
     "grammar": "nearleyc editor/grammar.ne > editor/grammar.js",
-    "build": "webpack"
+    "build": "webpack && cp app/icons.svg build/icons.svg"
   },
   "dependencies": {
     "codemirror": "^5.25.0",
