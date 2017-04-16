@@ -7,6 +7,8 @@ function parseFile(source) {
   parser.feed(source)
   const results = parser.results
   if (results.length > 1) {
+    console.log(source)
+    //console.log(parser.table.slice().pop().states.filter(s => s.isComplete).map(s => s.rule.toString(s.dot)).join('\n'))
     throw new Error("Ambiguous!")
   }
   return results[0]
@@ -55,6 +57,10 @@ describe('parse', () => {
     ]
     expect(parseFile('\n\nstamp\n\nstamp\n\n')).toEqual(output)
     expect(parseFile('\n\nstamp\n \t\nstamp\n\n')).toEqual(output)
+  })
+
+  test("braces don't need padding", () => {
+    expect(parseBlock('forever{\n}')).toEqual(['doForever', null])
   })
 
   test('operator precedence', () => {

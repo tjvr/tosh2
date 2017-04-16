@@ -12,9 +12,20 @@ function generate(scripts) {
   var out = ''
   var last
   for (let [token, next] of itt(tokens).lookahead()) {
-    if (next === '}') indent--
-    if (token === '{') indent++
-    if (typeof token === 'string') { out += token; continue }
+    if (next === '}') {
+      indent--
+    }
+    if (typeof token === 'string') {
+      if (token === '{') {
+        if (!/ $/.test(out)) out += ' '
+        indent++
+      }
+      out += token
+      if (token === '}') {
+        if (next && next.type !== 'WS') out += ' '
+      }
+      continue
+    }
     switch (token.type) {
       case 'NL':
         out += '\n'

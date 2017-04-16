@@ -446,14 +446,14 @@ hat   -> "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
 mouth -> "{" %NL script %NL "}"  {% select(2) %}
        | "{" %NL "}"             {% literal(null) %}
 
-elsemouth -> "{" %NL script %NL "}" __ else __  {% select(2) %}
-           | "{" %NL "}" __ else __             {% literal(null) %}
+elsemouth -> "{" %NL script %NL "}" else  {% select(2) %}
+           | "{" %NL "}" else             {% literal(null) %}
 
-block -> "repeat" __ n __ mouth  {% block("doRepeat", 2, 4) %}
-       | "if" __ b __ "then" __ mouth {% block("doIf", 2, 6) %}
-       | "if" __ b __ "then" __ elsemouth mouth {% block("doIfElse", 2, 6, 7) %}
-       | "forever" __ mouth {% block("doForever", 2) %}
-       | "repeat" __ "until" __ b __ mouth {% block("doUntil", 4, 6) %}
+block -> "repeat" __ n _ mouth  {% block("doRepeat", 2, 4) %}
+       | "if" __ b __ "then" _ mouth {% block("doIf", 2, 6) %}
+       | "if" __ b __ "then" _ elsemouth mouth {% block("doIfElse", 2, 6, 7) %}
+       | "forever" _ mouth {% block("doForever", 2) %}
+       | "repeat" __ "until" __ b _ mouth {% block("doUntil", 4, 6) %}
 
 block -> "move" __ n __ "steps" {% block("forward:", 2) %}
        | "turn" __ _turnRight __ n __ "degrees" {% block("turnRight:", 4) %}
@@ -562,7 +562,6 @@ simple_reporter -> "mouse" __ "x" {% block("mouseX") %}
 simple_reporter -> VariableName {% block("readVariable", 0) %}
 
 else -> _ "else" _  {% ignore %}
-end -> _ "end" _    {% ignore %}
 ellips -> _ "..." _ {% ignore %}
 
 
