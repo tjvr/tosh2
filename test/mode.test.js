@@ -66,7 +66,7 @@ const testMode = (function() {
         for (var j = 0; j < 10 && stream.start >= stream.pos; j++)
           var compare = mode.token(stream, state)
         if (j == 10)
-          throw new Failure("Failed to advance the stream." + stream.string + " " + stream.pos)
+          throw new Error("Failed to advance the stream." + stream.string + " " + stream.pos)
         var substr = stream.current()
         if (compare && compare.indexOf(" ") > -1) compare = compare.split(' ').sort().join(' ')
         stream.start = stream.pos
@@ -116,12 +116,12 @@ const mode = Mode(cfg, modeCfg)
 
 function MT(name) { testMode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
-describe('states', () => {
+describe('State', () => {
 
   const grammar = modeCfg.grammar
   const lexer = grammar.lexer
 
-  test('maintain index', () => {
+  test('maintains index', () => {
     const state = mode.startState()
     var stream
     expect(state.column.index).toBe(0)

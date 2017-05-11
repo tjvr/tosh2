@@ -21,12 +21,14 @@ class Highlighter {
 
   _c(start, state, className, emit) {
     if (state.isToken) {
-      // TODO // if (state.reference < start) return
+      if (state.reference > start) {
       emit(className, state.token)
+      }
     } else if (state.left) {
       var className = this.getClass(state.rule) || className
+      //if (start <= state.right.reference) {
       this._c(start, state.left, className, emit)
-      //if (!state.right) console.error(state)
+      //}
       this._c(start, state.right, className, emit)
     }
   }
@@ -141,13 +143,12 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     }
 
     token(stream) {
-      if (stream.sol() && this.column.index > 0) {
-        // this.indent = stream.indentation()
+      if (stream.sol()) {
+        if (this.column.index > 0) {
+          // this.indent = stream.indentation()
 
-        this.highlight('\n')
-      }
-
-      if (!this.line.length) {
+          this.highlight('\n')
+        }
 
         let m = stream.match(/.*/, false) // don't consume
         this.line = this.highlight(m[0])
