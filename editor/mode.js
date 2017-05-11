@@ -2,23 +2,6 @@
 const CodeMirror = require('codemirror')
 const nearley = require('nearley')
 
-class Range {
-  constructor(start, end, className) {
-    if (end <= start) throw new Error('invalid range')
-    this.start = start
-    this.end = end
-    this.className = className
-  }
-
-  size() {
-    return this.end - this.start
-  }
-
-  toString() {
-    return `Range(${this.start}, ${this.end}, '${this.className}')`
-  }
-}
-
 
 class Highlighter {
   constructor(parser, getClass) {
@@ -38,12 +21,12 @@ class Highlighter {
 
   _c(start, state, className, emit) {
     if (state.isToken) {
-      //if (state.reference < start) return
+      // TODO // if (state.reference < start) return
       emit(className, state.token)
     } else if (state.left) {
       var className = this.getClass(state.rule) || className
       this._c(start, state.left, className, emit)
-      if (!state.right) console.error(state)
+      //if (!state.right) console.error(state)
       this._c(start, state.right, className, emit)
     }
   }
@@ -129,7 +112,6 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     // TODO does this actually get called after every \n ?
     copy() {
       const s = new State(this.column)
-      s.highlight('\n')
       return s
     }
 
@@ -142,7 +124,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
         completer.feed(line)
       } catch (e) {
         //console.error('err', e)
-        return [{className: 'error', text: line}]
+        return [{className: 'error', text: line, error: e}]
       }
       const endCol = this.column = completer.save()
 
@@ -158,10 +140,15 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       return ranges
     }
 
-    next(stream) {
-      // this.indent = stream.indentation()
+    token(stream) {
+      if (stream.sol() && this.column.index > 0) {
+        // this.indent = stream.indentation()
+
+        this.highlight('\n')
+      }
 
       if (!this.line.length) {
+
         let m = stream.match(/.*/, false) // don't consume
         this.line = this.highlight(m[0])
         if (!this.line.length) throw new Error('oh bother')
@@ -171,7 +158,6 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
 
       let range = this.line.shift()
       if (!stream.match(range.text)) { // consume
-        console.error(range)
         throw new Error("Does not match stream")
       }
       return range.className
@@ -185,7 +171,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     name: 'tosh',
     startState: () => new State(startColumn),
     copyState: state => state.copy(),
-    token: (stream, state) => state.next(stream),
+    token: (stream, state) => state.token(stream),
     blankLine: state => {
       state.highlight('\n')
       return ''

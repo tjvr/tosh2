@@ -116,6 +116,35 @@ const mode = Mode(cfg, modeCfg)
 
 function MT(name) { testMode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
+describe('states', () => {
+
+  const grammar = modeCfg.grammar
+  const lexer = grammar.lexer
+
+  test('maintain index', () => {
+    const state = mode.startState()
+    var stream
+    expect(state.column.index).toBe(0)
+    stream = new CodeMirror.StringStream('stamp')
+    expect(mode.token(stream, state)).toBe('s-pen')
+    expect(state.column.index).toBe(1)
+    expect(state.column.lexerState.line).toBe(1)
+    expect(lexer.index).toBe(5)
+
+    mode.blankLine(state)
+    expect(state.column.index).toBe(2)
+    expect(state.column.lexerState.line).toBe(2)
+
+    stream = new CodeMirror.StringStream('stamp')
+    expect(mode.token(stream, state)).toBe('s-pen')
+    expect(state.column.index).toBe(4)
+    expect(state.column.lexerState.line).toBe(3)
+  })
+
+  // test('can be copied')
+
+})
+
 describe('highlight', () => {
 
   MT('one line',
@@ -130,11 +159,22 @@ describe('highlight', () => {
   MT('c block line',
     '[s-control forever] [s-control {]')
 
-  MT('full c block',
-    '[s-control forever] [s-control {]\n[s-pen stamp]\n[s-control }]')
-
   MT('two lines',
-    '[s-pen stamp]\n[s-pen stamp]')
+    '[s-pen stamp]',
+    '[s-pen stamp]')
+
+  MT('empty c block',
+    '[s-control forever] [s-control {]',
+    '[s-control }]')
+
+  MT('two different lines',
+    '[s-events when] [s-green green] [s-events flag]',
+    '[s-pen stamp]')
+
+  MT('full c block',
+    '[s-control forever] [s-control {]',
+    '[s-pen stamp]',
+    '[s-control }]')
 
 })
 
