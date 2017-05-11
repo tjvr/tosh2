@@ -21,15 +21,14 @@ class Highlighter {
 
   _c(start, state, className, emit) {
     if (state.isToken) {
-      if (state.reference > start) {
       emit(className, state.token)
-      }
     } else if (state.left) {
+      if (state.right.isToken && state.right.reference <= start) {
+        return
+      }
       var className = this.getClass(state.rule) || className
-      //if (start <= state.right.reference) {
-      this._c(start, state.left, className, emit)
-      //}
       this._c(start, state.right, className, emit)
+      this._c(start, state.left, className, emit)
     }
   }
 
@@ -38,16 +37,15 @@ class Highlighter {
     var state = endCol.states.find(s => s.reference < endCol.index)
 
     // find root
-    const stack = [state]
+    const stack = [{state}]
     while (state.reference > 0) {
       if (state.left) {
         state = state.left
       } else {
         state = state.wantedBy[0]
-        stack.push(state)
+        stack.push({state})
       }
     }
-    stack.reverse()
     return stack
   }
 
@@ -55,24 +53,19 @@ class Highlighter {
     const start = startCol.index
     const stack = this._getRoot(start, endCol)
 
+    // inherit classNames
+    var className = null
+    for (var i=stack.length; i--; ) {
+      const item = stack[i]
+      item.className = className = this.getClass(item.state.rule) || className
+    }
+
+    // emit tokens in reverse order until we reach start
     var className = ''
-    stack.forEach(state => {
-      className = this.getClass(state.rule) || className
+    stack.forEach(({state, className}) => {
       this._c(start, state, className, emit)
     })
-
-    //this._h(startCol.index, state, '', emit)
-
-
-    /*
-    if (!state) {
-      const size = endCol.index - startCol.index
-      emit('error', {offset: 0, size: size})
-      return
-    }
-    this._ranges(state, "", emit)
-    */
-  }
+ }
 }
 
 class Completer {
@@ -157,7 +150,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
 
       //console.log(JSON.stringify(this.line.map(x => x.text)))
 
-      let range = this.line.shift()
+      let range = this.line.pop()
       if (!stream.match(range.text)) { // consume
         throw new Error("Does not match stream")
       }
