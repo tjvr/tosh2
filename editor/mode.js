@@ -151,7 +151,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       const ranges = []
       completer.highlight(startCol, endCol, (className, token) => {
         ranges.push({
-          className: className + ' ' + token.type,
+          className: (className && className.trim()) || null,
           text: line.substr(token.offset, token.size),
         })
       })
@@ -182,6 +182,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
   /* CodeMirror mode */
 
   return {
+    name: 'tosh',
     startState: () => new State(startColumn),
     copyState: state => state.copy(),
     token: (stream, state) => state.next(stream),
