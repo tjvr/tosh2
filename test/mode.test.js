@@ -45,14 +45,22 @@ describe('highlight', () => {
   })
 
   test('c block brace', () => {
-    expect(highlight(mode.startState(), 'repeat {')).toEqual([
-      ['repeat', 's-control symbol'],
+    expect(highlight(mode.startState(), 'forever {')).toEqual([
+      ['forever', 's-control symbol'],
       [' ', 's-control WS'],
-      ['{', 's-control'],
+      ['{', 's-control {'],
     ])
   })
 
-
+  test('two lines', () => {
+    const state = mode.startState()
+    expect(highlight(state, 'stamp')).toEqual([
+      ['stamp', 's-pen symbol'],
+    ])
+    expect(highlight(state, 'stamp')).toEqual([
+      ['stamp', 's-pen symbol'],
+    ])
+  })
 
 })
 

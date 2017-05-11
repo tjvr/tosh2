@@ -36,43 +36,57 @@ class Highlighter {
     // TODO remove
   }
 
-  _getRange(item, end, allowPartial) {
-    var tag = item.tag
-    if (isLR0(tag)) {
-      if (!allowPartial) return
-      tag = tag.rule.name
-    }
-
-    let className = this.getClass(tag)
-    if (className === undefined) throw 'class cannot be undefined'
-    if (!className) return
-
-    let start = item.start.index
-    if (start === end) return
-    return new Range(start, end, className)
-  }
-
-  _ranges(state, className, emit) {
+  _c(start, state, className, emit) {
     if (state.isToken) {
+      //if (state.reference < start) return
       emit(className, state.token)
     } else if (state.left) {
       var className = this.getClass(state.rule) || className
-      this._ranges(state.left, className, emit)
+      this._c(start, state.left, className, emit)
       if (!state.right) console.error(state)
-      this._ranges(state.right, className, emit)
-    } else {
-      return
+      this._c(start, state.right, className, emit)
     }
   }
 
+  _getRoot(start, endCol) {
+    // non-null state
+    var state = endCol.states.find(s => s.reference < endCol.index)
+
+    // find root
+    const stack = [state]
+    while (state.reference > 0) {
+      if (state.left) {
+        state = state.left
+      } else {
+        state = state.wantedBy[0]
+        stack.push(state)
+      }
+    }
+    stack.reverse()
+    return stack
+  }
+
   highlight(startCol, endCol, emit) {
-    const state = endCol.states.find(s => s.reference === startCol.index)
+    const start = startCol.index
+    const stack = this._getRoot(start, endCol)
+
+    var className = ''
+    stack.forEach(state => {
+      className = this.getClass(state.rule) || className
+      this._c(start, state, className, emit)
+    })
+
+    //this._h(startCol.index, state, '', emit)
+
+
+    /*
     if (!state) {
       const size = endCol.index - startCol.index
       emit('error', {offset: 0, size: size})
       return
     }
     this._ranges(state, "", emit)
+    */
   }
 }
 
@@ -88,7 +102,7 @@ class Completer {
   save() { return this.parser.save() }
   restore(col) { return this.parser.restore(col) }
 
-  highlight(start, end, getClass) { return this.highlighter.highlight(start, end, getClass) }
+  highlight(start, end, emit) { return this.highlighter.highlight(start, end, emit) }
 
   /*
   rewind(index) { return this.leftParser.rewind(index) }
@@ -112,6 +126,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       this.line = []
     }
 
+    // TODO does this actually get called after every \n ?
     copy() {
       const s = new State(this.column)
       s.highlight('\n')
@@ -149,7 +164,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       if (!this.line.length) {
         let m = stream.match(/.*/, false) // don't consume
         this.line = this.highlight(m[0])
-        if (!this.line.length) throw new Error('panic')
+        if (!this.line.length) throw new Error('oh bother')
       }
 
       //console.log(JSON.stringify(this.line.map(x => x.text)))
