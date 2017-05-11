@@ -98,7 +98,7 @@ class Completer {
   */
 }
 
-CodeMirror.defineMode('tosh', function(cfg, modeCfg) {
+CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
   // Use setOption('mode', ...) to change the grammar.
   const completer = new Completer(modeCfg.grammar, {
     highlight: modeCfg.highlight, // getClass
