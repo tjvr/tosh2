@@ -443,11 +443,11 @@ hat   -> "when" __ _greenFlag __ "clicked" {% block("whenGreenFlag") %}
        | "when" __ "I" __ "receive" __ m_broadcast {% block("whenIReceive", 6) %}
        | "when" __ "I" __ "start" __ "as" __ "a" __ "clone" {% block("whenCloned") %}
 
-mouth -> "{" %NL script %NL "}"  {% select(2) %}
-       | "{" %NL "}"             {% literal(null) %}
+mouth -> "{" _ %NL script %NL _ "}"  {% select(3) %}
+       | "{" _ %NL _ "}"             {% literal(null) %}
 
-elsemouth -> "{" %NL script %NL "}" else  {% select(2) %}
-           | "{" %NL "}" else             {% literal(null) %}
+elsemouth -> "{" _ %NL script %NL _ "}" else  {% select(3) %}
+           | "{" _ %NL _ "}" else             {% literal(null) %}
 
 block -> "repeat" __ n _ mouth  {% block("doRepeat", 2, 4) %}
        | "if" __ b __ "then" _ mouth {% block("doIf", 2, 6) %}

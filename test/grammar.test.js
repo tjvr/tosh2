@@ -68,6 +68,11 @@ describe('parse', () => {
     expect(parseBlock('say 2 + 3 * 4')).toEqual(['say:', ['+', 2, ['*', 3, 4]]])
   })
 
+  test('indented brace', () => {
+    expect(parseBlock('forever {\n   }')).toEqual(['doForever', null])
+  })
+
+
 })
 
 

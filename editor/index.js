@@ -210,7 +210,7 @@ Editor.prototype.cmOptions = {
   },
 
   indentUnit: 3,
-  smartIndent: true,
+  //smartIndent: true,
   tabSize: 3,
   indentWithTabs: true,
 

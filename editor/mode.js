@@ -99,18 +99,21 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
   const startColumn = completer.save()
 
   class State {
-    constructor(column) {
+    constructor(column, indent) {
       this.column = column
       this.line = []
+      this.indent = indent
     }
 
     // TODO does this actually get called after every \n ?
     copy() {
-      const s = new State(this.column)
+      const s = new State(this.column, this.indent)
       return s
     }
 
     highlight(line) {
+      // TODO indentation is getting eaten somewhere funny
+
       const startCol = this.column
       completer.restore(startCol)
 
@@ -123,13 +126,14 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       }
       const endCol = this.column = completer.save()
 
-      //console.log('=>', JSON.stringify(completer.parser.results[0]))
-
       const ranges = []
       completer.highlight(startCol, endCol, (className, token) => {
+        const text = line.substr(token.offset, token.size)
+        if (text === '{') { this.indent++ }
+        if (text === '}') { this.indent--;  }
         ranges.push({
           className: (className && className.trim()) || null,
-          text: line.substr(token.offset, token.size),
+          text: text,
         })
       })
       return ranges
@@ -138,12 +142,10 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     token(stream) {
       if (stream.sol()) {
         if (this.column.index > 0) {
-          // this.indent = stream.indentation()
-
           this.highlight('\n')
         }
 
-        let m = stream.match(/.*/, false) // don't consume
+        let m = stream.match(/.*$/, false) // don't consume
         this.line = this.highlight(m[0])
         if (!this.line.length) throw new Error('oh bother')
       }
@@ -163,7 +165,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
 
   return {
     name: 'tosh',
-    startState: () => new State(startColumn),
+    startState: () => new State(startColumn, 0),
     copyState: state => state.copy(),
     token: (stream, state) => state.token(stream),
     blankLine: state => {
@@ -171,20 +173,16 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       return ''
     },
 
+    indent: function(state, textAfter) {
+      var indent = state.indent
+      if (/^\s*\}\s*$/.test(textAfter)) indent--
+      return cfg.indentUnit * indent
+    },
+
     _completer: completer,
 
-    // TODO auto-indent
-    //indent: function(state, textAfter) {
-    //  var indent = parseInt(state.indent / cfg.indentUnit)
-
-    //  // TODO
-
-    //  // return number of spaces to indent, taking indentUnit into account
-    //  return cfg.indentUnit * indent
-    //},
-
     // TODO electric etc
-    // electricInput: /^\s*(?:case .*?:|default:|\{|\})$/,
+    electricInput: /^\s*[{}]$/,
     // blockCommentStart: "/*",
     // blockCommentEnd: "*/",
     // lineComment: "//",
