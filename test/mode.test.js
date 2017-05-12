@@ -179,5 +179,11 @@ describe('highlight', () => {
     '  [s-pen stamp]',
     '[s-control }]')
 
+  MT('invalid',
+    '[error foo bar]')
+
+  MT('open string',
+    '[error say ][string "]')
+
 })
 

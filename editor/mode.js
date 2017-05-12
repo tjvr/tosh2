@@ -112,20 +112,29 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     }
 
     highlight(line) {
-      // TODO indentation is getting eaten somewhere funny
-
       const startCol = this.column
       completer.restore(startCol)
 
       // TODO handle previous error
       try {
         completer.feed(line)
+
       } catch (e) {
-        //console.error('err', e)
-        return [{className: 'error', text: line, error: e}]
+        // TODO avoid lexing again
+        const lexer = modeCfg.grammar.lexer
+        lexer.reset(line, startCol.lexerState)
+        const ranges = []
+        var token
+        while (token = lexer.next()) {
+          const text = line.substr(token.offset, token.size)
+          ranges.push({className: 'error', text})
+        }
+        ranges.reverse()
+        return ranges
       }
       const endCol = this.column = completer.save()
 
+      // TODO can we avoid running highlighting if CM is using processLine?
       const ranges = []
       completer.highlight(startCol, endCol, (className, token) => {
         const text = line.substr(token.offset, token.size)
@@ -150,9 +159,11 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
         if (!this.line.length) throw new Error('oh bother')
       }
 
-      //console.log(JSON.stringify(this.line.map(x => x.text)))
-
       let range = this.line.pop()
+      if (range.className === 'error' && /^['"]/.test(range.text)) {
+        stream.match(range.text) // consume
+        return 'string'
+      }
       if (!stream.match(range.text)) { // consume
         throw new Error("Does not match stream")
       }
@@ -188,7 +199,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     // blockCommentEnd: "*/",
     // lineComment: "//",
     // fold: "brace",
-    // closeBrackets: "()[]{}''\"\"``",
+    closeBrackets: "()[]<>''\"\"",
 
   }
 })
