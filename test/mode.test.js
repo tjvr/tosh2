@@ -186,10 +186,19 @@ describe('highlight', () => {
     'sa')
 
   MT('partial',
+    'foo')
+
+  MT('partial',
     '[s-looks say] [s-motion x] pos')
 
   MT('invalid',
-    'foo bar')
+    '[error foo ]')
+
+  MT('invalid',
+    '[error foo bar]')
+
+  MT('invalid',
+    '[error foo bar ]')
 
   MT('open string',
     '[s-looks say] [string "]')

@@ -50,6 +50,8 @@ class Highlighter {
   }
 
   highlight(startCol, endCol, emit) {
+    if (startCol === endCol) { return }
+
     const start = startCol.index
     const stack = this._getRoot(start, endCol)
 
@@ -117,42 +119,32 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       completer.restore(startCol)
 
       // TODO handle previous error
+
       let errorToken
-      let endCol
       try {
         completer.feed(line)
-
-        endCol = completer.save()
-
       } catch (err) {
-        const isPartial = !/\s$/.test(line)
         errorToken = err.token
-
-        endCol = completer.parser.table[completer.parser.current]
-
-        if (!isPartial) {
-          // TODO avoid lexing again
-          lexer.reset(line, startCol.lexerState)
-          const ranges = []
-          var token
-          while (token = lexer.next()) {
-            const text = line.substr(token.offset, token.size)
-            ranges.push({className: 'error', text})
-          }
-          ranges.reverse()
-          return ranges
-        }
       }
-      this.column = endCol
+      const endCol = this.column = completer.save()
+
+      const remaining = []
+      var token
+      while (token = lexer.next()) {
+        remaining.push(token)
+      }
 
       const ranges = []
-      if (errorToken) {
-        const text = line.slice(errorToken.offset)
-        ranges.push({className: /^["']/.test(text) ? 'string' : null, text})
+      for (var i=remaining.length; i--; ) {
+        const token = remaining[i]
+        const text = line.substr(token.offset, token.size)
+        ranges.push({className: 'error', text})
       }
 
-      if (startCol === endCol) {
-        return [{className: null, text: line}]
+      const isPartial = !/\s$/.test(line)
+      if (errorToken) {
+        const text = line.slice(errorToken.offset)
+        ranges.push({className: /^["']/.test(text) ? 'string' : remaining.length ? 'error' : null, text})
       }
 
       // TODO can we avoid running highlighting if CM is using processLine?
