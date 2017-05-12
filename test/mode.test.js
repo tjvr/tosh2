@@ -182,14 +182,20 @@ describe('highlight', () => {
     '  [s-pen stamp]',
     '[s-control }]')
 
+  MT('partial',
+    'sa')
+
+  MT('partial',
+    '[s-looks say] [s-motion x] pos')
+
   MT('invalid',
-    '[error foo bar]')
+    'foo bar')
 
   MT('open string',
-    '[error say ][string "]')
+    '[s-looks say] [string "]')
 
   MT('open string',
-    '[error say ][string "foo]')
+    '[s-looks say] [string "foo]')
 
   // make sure I don't try to be too efficient looking for open strings
   MT('closed string',

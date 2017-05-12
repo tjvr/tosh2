@@ -97,6 +97,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
   })
   completer.feed("")
   const startColumn = completer.save()
+  const lexer = modeCfg.grammar.lexer
 
   class State {
     constructor(column, indent) {
@@ -116,28 +117,45 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       completer.restore(startCol)
 
       // TODO handle previous error
+      let errorToken
+      let endCol
       try {
         completer.feed(line)
 
-        // TODO allow partial tokens
+        endCol = completer.save()
 
-      } catch (e) {
-        // TODO avoid lexing again
-        const lexer = modeCfg.grammar.lexer
-        lexer.reset(line, startCol.lexerState)
-        const ranges = []
-        var token
-        while (token = lexer.next()) {
-          const text = line.substr(token.offset, token.size)
-          ranges.push({className: 'error', text})
+      } catch (err) {
+        const isPartial = !/\s$/.test(line)
+        errorToken = err.token
+
+        endCol = completer.parser.table[completer.parser.current]
+
+        if (!isPartial) {
+          // TODO avoid lexing again
+          lexer.reset(line, startCol.lexerState)
+          const ranges = []
+          var token
+          while (token = lexer.next()) {
+            const text = line.substr(token.offset, token.size)
+            ranges.push({className: 'error', text})
+          }
+          ranges.reverse()
+          return ranges
         }
-        ranges.reverse()
-        return ranges
       }
-      const endCol = this.column = completer.save()
+      this.column = endCol
+
+      const ranges = []
+      if (errorToken) {
+        const text = line.slice(errorToken.offset)
+        ranges.push({className: /^["']/.test(text) ? 'string' : null, text})
+      }
+
+      if (startCol === endCol) {
+        return [{className: null, text: line}]
+      }
 
       // TODO can we avoid running highlighting if CM is using processLine?
-      const ranges = []
       completer.highlight(startCol, endCol, (className, token) => {
         const text = line.substr(token.offset, token.size)
         if (text === '{') { this.indent++ }
