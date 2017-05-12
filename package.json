@@ -19,7 +19,7 @@
     "codemirror": "^5.25.0",
     "jszip": "^2",
     "moo": "^0.3.1",
-    "nearley": "git://github.com/Hardmath123/nearley.git#moo",
+    "nearley": "^2.9.1",
     "nearley-reverse": "git://github.com/tjvr/nearley-reverse.git#d650bc6",
     "v2": "git://github.com/nathan/v2.git#03984d2"
   },

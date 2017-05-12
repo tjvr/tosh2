@@ -23,7 +23,7 @@ class Highlighter {
     if (state.isToken) {
       emit(className, state.token)
     } else if (state.left) {
-      if (state.right.isToken && state.right.reference <= start) {
+      if (state.right.isToken && state.right.reference < start) {
         return
       }
       var className = this.getClass(state.rule) || className
