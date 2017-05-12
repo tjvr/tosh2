@@ -174,7 +174,7 @@ describe('highlight', () => {
     '[s-control }]')
 
   MT('two different lines',
-    '[s-events when] [s-green green] [s-events flag]',
+    '[s-events when] [s-green flag] [s-events clicked]',
     '[s-pen stamp]')
 
   MT('full c block',
