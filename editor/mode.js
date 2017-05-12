@@ -102,7 +102,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     constructor(column, indent) {
       this.column = column
       this.line = []
-      this.indent = indent
+      this.indent = indent || 0
     }
 
     // TODO does this actually get called after every \n ?
@@ -130,7 +130,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       completer.highlight(startCol, endCol, (className, token) => {
         const text = line.substr(token.offset, token.size)
         if (text === '{') { this.indent++ }
-        if (text === '}') { this.indent--;  }
+        if (text === '}') { this.indent-- }
         ranges.push({
           className: (className && className.trim()) || null,
           text: text,
@@ -176,6 +176,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
     indent: function(state, textAfter) {
       var indent = state.indent
       if (/^\s*\}\s*$/.test(textAfter)) indent--
+      if (isNaN(cfg.indentUnit)) { throw new Error('oh bother') }
       return cfg.indentUnit * indent
     },
 

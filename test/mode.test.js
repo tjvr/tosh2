@@ -97,6 +97,7 @@ const testMode = (function() {
 
     var observedOutput = highlight(text, mode)
 
+    expect(observedOutput.indentFailures).toBe(undefined)
     expect(observedOutput).toEqual(expectedOutput)
   }
 
@@ -111,10 +112,9 @@ const testMode = (function() {
 
 //const mode = CodeMirror.getMode({indentUnit: 2}, 'tosh')
 const modeCfg = Editor.prototype.cmOptions.mode
-const cfg = {tabSize: 2}
+const cfg = {tabSize: 2, indentUnit: 2}
 const mode = Mode(cfg, modeCfg)
 
-function MT(name) { testMode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
 describe('State', () => {
 
@@ -145,7 +145,10 @@ describe('State', () => {
 
 })
 
+
 describe('highlight', () => {
+
+  function MT(name) { testMode(name, mode, Array.prototype.slice.call(arguments, 1)); }
 
   MT('one line',
     '[s-pen stamp]')
@@ -173,7 +176,7 @@ describe('highlight', () => {
 
   MT('full c block',
     '[s-control forever] [s-control {]',
-    '[s-pen stamp]',
+    '  [s-pen stamp]',
     '[s-control }]')
 
 })
