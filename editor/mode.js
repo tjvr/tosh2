@@ -119,6 +119,8 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       try {
         completer.feed(line)
 
+        // TODO allow partial tokens
+
       } catch (e) {
         // TODO avoid lexing again
         const lexer = modeCfg.grammar.lexer
@@ -161,8 +163,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
 
       let range = this.line.pop()
       if (range.className === 'error' && /^['"]/.test(range.text)) {
-        stream.match(range.text) // consume
-        return 'string'
+        range.className = 'string'
       }
       if (!stream.match(range.text)) { // consume
         throw new Error("Does not match stream")

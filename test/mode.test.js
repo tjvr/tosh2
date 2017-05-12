@@ -185,6 +185,9 @@ describe('highlight', () => {
   MT('open string',
     '[error say ][string "]')
 
+  MT('open string',
+    '[error say ][string "foo]')
+
   // make sure I don't try to be too efficient looking for open strings
   MT('closed string',
     '[s-looks say] [string "foo "] ')
