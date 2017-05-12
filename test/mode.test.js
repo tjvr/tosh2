@@ -156,6 +156,9 @@ describe('highlight', () => {
   MT('strings',
     '[s-looks say] [string "hello"]')
 
+  MT('numbers',
+    '[s-motion move] [s-operators 10] [s-operators ^] [s-operators of] [number 42]')
+
   MT('partial c block',
     '[s-control forever]')
 

@@ -201,6 +201,7 @@ Editor.prototype.cmOptions = {
         case 'b0': return 'false'
         case 'end': case 'else': return 's-control'
         case 'string': case 's0': return 'string'
+        case 'number': case 'n0': return 'number'
         case '_': case '__': return ' '
       }
       const factory = rule.postprocess
