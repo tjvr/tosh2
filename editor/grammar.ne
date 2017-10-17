@@ -37,10 +37,6 @@ let lexer = moo.compile([
   {name: 'ERROR',   error: true},
 ])
 
-lexer.has = function(name) {
-  return lexer.groups.find(g => g.tokenType === name)
-}
-
 %}
 @lexer lexer
 
