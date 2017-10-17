@@ -137,7 +137,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       const ranges = []
       for (var i=remaining.length; i--; ) {
         const token = remaining[i]
-        const text = line.substr(token.offset, token.size)
+        const text = line.substr(token.offset, token.text.length)
         ranges.push({className: 'error', text})
       }
 
@@ -149,7 +149,7 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
 
       // TODO can we avoid running highlighting if CM is using processLine?
       completer.highlight(startCol, endCol, (className, token) => {
-        const text = line.substr(token.offset, token.size)
+        const text = line.substr(token.offset, token.text.length)
         if (text === '{') { this.indent++ }
         if (text === '}') { this.indent-- }
         ranges.push({

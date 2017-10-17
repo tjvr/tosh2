@@ -18,8 +18,8 @@
   "dependencies": {
     "codemirror": "^5.25.0",
     "jszip": "^2",
-    "moo": "^0.3.2",
-    "nearley": "^2.11.0",
+    "moo": "^0.4.2",
+    "nearley": "git://github.com/hardmath123/nearley.git#05e4c47",
     "nearley-reverse": "git://github.com/tjvr/nearley-reverse.git#f32249d",
     "v2": "git://github.com/nathan/v2.git#03984d2"
   },

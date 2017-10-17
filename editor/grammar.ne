@@ -5,22 +5,22 @@ const moo = require('moo')
 
 const backslashes = s => s.replace(/\\["\\]/g, x => x[1])
 
-
 let lexer = moo.compile([
   {name: 'NL',      match: '\n', lineBreaks: true },
   {name: 'WS',      match: /[ \t]+/},
   {name: 'ellips',  match: /\.{3}/},
-  {name: 'comment', match: /\/{2}(.*)$/},
+  {name: 'comment', match: /\/{2}(?:.*)$/, value: x => x.slice(2)},
   {name: 'false',   match: '<>'},
   {name: 'zero',    match: '()'},
   {name: 'empty',   match: '_'},
-  {name: 'number',  match: /([0-9]+(?:\.[0-9]+)?e-?[0-9]+)/}, // 123[.123]e[-]123
-  {name: 'number',  match: /((?:0|[1-9][0-9]*)?\.[0-9]+)/},   // [123].123
-  {name: 'number',  match: /((?:0|[1-9][0-9]*)\.[0-9]*)/},    // 123.[123]
-  {name: 'number',  match: /(0|[1-9][0-9]*)/},              // 123
-  {name: 'color',   match: /#([A-Fa-f0-9]{3}(?:[A-Fa-f0-9]{3})?)/},
-  {name: 'string',  match: /"((?:\\["\\]|[^\n"\\])*)"/}, // strings are backslash-escaped
-  {name: 'string',  match: /'((?:\\['\\]|[^\n'\\])*)'/},
+  {name: 'number',  match: /[0-9]+(?:\.[0-9]+)?e-?[0-9]+/}, // 123[.123]e[-]123
+  {name: 'number',  match: /(?:0|[1-9][0-9]*)?\.[0-9]+/},   // [123].123
+  {name: 'number',  match: /(?:0|[1-9][0-9]*)\.[0-9]*/},    // 123.[123]
+  {name: 'number',  match: /0|[1-9][0-9]*/},              // 123
+  {name: 'color',   match: /#[A-Fa-f0-9]{3}(?:[A-Fa-f0-9]{3})?/, value: x => x.slice(1)},
+  // strings are backslash-escaped
+  {name: 'string',  match: /"(?:(?:\\["\\]|[^\n"\\])*)"/, value: x => x.slice(1, -1)},
+  {name: 'string',  match: /'(?:(?:\\['\\]|[^\n'\\])*)'/, value: x => x.slice(1, -1)},
   {name: 'lparen',  match: '('},
   {name: 'rparen',  match: ')'},
   {name: 'langle',  match: '<'},

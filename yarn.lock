@@ -2240,9 +2240,9 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.1, mkdirp@~0.5.0:
   dependencies:
     minimist "0.0.8"
 
-moo@^0.3.2:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/moo/-/moo-0.3.3.tgz#a05ec95ea2bf29777cc402eeb5b20ac757128786"
+moo@^0.4.2:
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/moo/-/moo-0.4.3.tgz#3f847a26f31cf625a956a87f2b10fbc013bfd10e"
 
 ms@2.0.0:
   version "2.0.0"
@@ -2262,13 +2262,14 @@ natural-compare@^1.4.0:
   dependencies:
     nearley "^2.11.0"
 
-nearley@^2.11.0:
+nearley@^2.11.0, "nearley@git://github.com/hardmath123/nearley.git#05e4c47":
   version "2.11.0"
-  resolved "https://registry.yarnpkg.com/nearley/-/nearley-2.11.0.tgz#5e626c79a6cd2f6ab9e7e5d5805e7668967757ae"
+  resolved "git://github.com/hardmath123/nearley.git#05e4c4745d825724a5099d5c05e0525ac7dc5e1b"
   dependencies:
     nomnom "~1.6.2"
     railroad-diagrams "^1.0.0"
     randexp "^0.4.2"
+    semver "^5.4.1"
 
 node-int64@^0.4.0:
   version "0.4.0"
@@ -2884,7 +2885,7 @@ sax@^1.2.1:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
 
-"semver@2 || 3 || 4 || 5", semver@^5.3.0:
+"semver@2 || 3 || 4 || 5", semver@^5.3.0, semver@^5.4.1:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.4.1.tgz#e059c09d8571f0540823733433505d3a2f00b18e"
 

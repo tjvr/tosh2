@@ -4,6 +4,7 @@ const grammar = nearley.Grammar.fromCompiled(require('../editor/grammar'))
 const reverse = require('nearley-reverse')
 const itt = require('itt')
 
+// TODO backslash-escaping, single or double quotes, etc
 const str = JSON.stringify
 
 function generate(scripts) {
