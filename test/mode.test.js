@@ -210,5 +210,8 @@ describe('highlight', () => {
   MT('closed string',
     '[s-looks say] [string "foo "] ')
 
+  MT('backslash-escaped strings',
+    '[s-looks say] [string "potato \\"waffles\\"."] ')
+
 })
 

@@ -27,6 +27,54 @@ function parseBlock(source) {
 }
 
 
+describe('tokenize', () => {
+
+  const lexer = grammar.lexer
+  const source = `
+  when flag clicked
+  say "Hello \\"world\\"!"
+  forever {
+    move 10 steps
+  }`
+
+  // TODO move backslash-escapes into tokenizer?
+
+  test('file', () => {
+    lexer.reset(source)
+    expect(Array.from(lexer).map(t => `${t.type} ${t.value}`)).toEqual([
+  "NL \n",
+  "WS   ",
+  "symbol when",
+  "WS  ",
+  "symbol flag",
+  "WS  ",
+  "symbol clicked",
+  "NL \n",
+  "WS   ",
+  "symbol say",
+  "WS  ",
+  'string Hello \\"world\\"!',
+  "NL \n",
+  "WS   ",
+  "symbol forever",
+  "WS  ",
+  "{ {",
+  "NL \n",
+  "WS     ",
+  "symbol move",
+  "WS  ",
+  "number 10",
+  "WS  ",
+  "symbol steps",
+  "NL \n",
+  "WS   ",
+  "} }",
+    ])
+  })
+
+})
+
+
 describe('parse', () => {
 
   test('line', () => {
@@ -72,6 +120,9 @@ describe('parse', () => {
     expect(parseBlock('forever {\n   }')).toEqual(['doForever', null])
   })
 
+  test('backslash-escapes', () => {
+    expect(parseBlock('say "Hello \\"world\\"!"')).toEqual(['say:', 'Hello "world"!'])
+  })
 
 })
 

@@ -3,6 +3,9 @@
 
 const moo = require('moo')
 
+const backslashes = s => s.replace(/\\["\\]/g, x => x[1])
+
+
 let lexer = moo.compile([
   {name: 'NL',      match: '\n', lineBreaks: true },
   {name: 'WS',      match: /[ \t]+/},
@@ -119,7 +122,7 @@ var negateNumber = factory(function (a, _, n) {
 })
 
 var string = factory(function decodeString(...d) {
-  return d[0].value
+  return backslashes(d[0].value)
 }, function encodeString(d) {
   if (typeof d === 'string') {
     return d
