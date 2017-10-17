@@ -96,6 +96,8 @@ const testMode = (function() {
       }
     }
 
+    // console.log(state.column.grammar.lexer.buffer)
+    // console.log(state.column.states.map(x => "" + x).join("\n"))
     return st
   }
 
@@ -201,7 +203,15 @@ describe('highlight', () => {
     'foo')
 
   MT('partial',
-    '[s-looks say] [s-motion x] pos')
+    '[s-looks say] [s-motion x] posi')
+
+  // TODO rank highlights/completions by frequency,
+  // or ditch the whole idea of partial highlighting
+  //
+  // MT('partial: "turn"',
+  //   '[s-motion say] turn')
+  //
+  // I note that tosh1 doesn't highlight partial words
 
   MT('invalid',
     '[error foo ]')
