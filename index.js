@@ -153,7 +153,7 @@ const mb = new MenuBar({
       ['Tips', () => openInTab('/help/tips/')],
       ['List of Blocks', () => openInTab('/help/blocks/')],
       '-',
-      ['Send Feedback', () => open('mailto:tim@tjvr.org')],
+      ['Send Feedback', () => openInTab('https://github.com/tjvr/tosh2/issues')],
     ]],
   ],
 })
