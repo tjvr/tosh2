@@ -1,10 +1,9 @@
-'use strict'
-const h = require('v2/h')
-const View = require('v2/view/view')
-const emitter = require('v2/emitter')
+"use strict"
+const h = require("v2/h")
+const View = require("v2/view/view")
+const emitter = require("v2/emitter")
 
-const Project = require('./format')
-
+const Project = require("./format")
 
 class Player extends View {
   /* originally based on nathan/phosphorus#b3ba0df */
@@ -15,12 +14,12 @@ class Player extends View {
     this.isFullScreen = false
     this.sending = false
 
-    this.flag.addEventListener('click', e => this.emit('flag click', e))
-    this.pause.addEventListener('click', this.pauseClick.bind(this))
-    this.stop.addEventListener('click', this.stopClick.bind(this))
-    this.fullScreen.addEventListener('click', this.fullScreenClick.bind(this))
+    this.flag.addEventListener("click", e => this.emit("flag click", e))
+    this.pause.addEventListener("click", this.pauseClick.bind(this))
+    this.stop.addEventListener("click", this.stopClick.bind(this))
+    this.fullScreen.addEventListener("click", this.fullScreenClick.bind(this))
 
-    window.addEventListener('resize', this.updateFullScreen.bind(this))
+    window.addEventListener("resize", this.updateFullScreen.bind(this))
 
     document.addEventListener("fullscreenchange", () => {
       if (this.isFullScreen !== document.fullscreen) this.fullScreenClick()
@@ -34,25 +33,27 @@ class Player extends View {
   }
 
   build() {
-    return h('.v2-view.tosh-preview', {id: 'phosphorus'}, [
-      this.controls = h('.controls', [
-        h('.progress-bar'),
-        this.stop = h('span.stop'),
-        this.pause = h('span.pause'),
-        this.flag = h('span.flag', {title: "Shift+click to enable turbo mode."}),
-        this.turbo = h('.turbo'),
+    return h(".v2-view.tosh-preview", { id: "phosphorus" }, [
+      (this.controls = h(".controls", [
+        h(".progress-bar"),
+        (this.stop = h("span.stop")),
+        (this.pause = h("span.pause")),
+        (this.flag = h("span.flag", { title: "Shift+click to enable turbo mode." })),
+        (this.turbo = h(".turbo")),
         //this.smallStageBtn = h('span.small-stage.disabled'),
-        this.fullScreen = h('span.full-screen'),
-      ]),
-      this.player = h('.player'),
+        (this.fullScreen = h("span.full-screen")),
+      ])),
+      (this.player = h(".player")),
     ])
   }
 
-  get isRunning() { return this.stage && this.stage.isRunning }
+  get isRunning() {
+    return this.stage && this.stage.isRunning
+  }
 
-  set size({w, h}) {
-    this.player.style.width = w + 'px'
-    this.player.style.height = h + 'px'
+  set size({ w, h }) {
+    this.player.style.width = w + "px"
+    this.player.style.height = h + "px"
     this.scale = w / 480
     if (this.stage) {
       this.stage.setZoom(this.scale)
@@ -64,8 +65,10 @@ class Player extends View {
 
   turboClick() {
     stage.isTurbo = !stage.isTurbo
-    flag.title = stage.isTurbo ? 'Turbo mode enabled. Shift+click to disable.' : 'Shift+click to enable turbo mode.'
-    turbo.style.display = stage.isTurbo ? 'block' : 'none'
+    flag.title = stage.isTurbo
+      ? "Turbo mode enabled. Shift+click to disable."
+      : "Shift+click to enable turbo mode."
+    turbo.style.display = stage.isTurbo ? "block" : "none"
   }
 
   flagClick(e) {
@@ -74,7 +77,7 @@ class Player extends View {
       this.turboClick()
     } else {
       this.stage.start()
-      this.pause.className = 'pause'
+      this.pause.className = "pause"
       this.stage.stopAll()
       this.stage.triggerGreenFlag()
     }
@@ -86,10 +89,10 @@ class Player extends View {
     if (!this.stage) return
     if (this.stage.isRunning) {
       this.stage.pause()
-      this.pause.className = 'play'
+      this.pause.className = "play"
     } else {
       this.stage.start()
-      this.pause.className = 'pause'
+      this.pause.className = "pause"
     }
     this.stage.focus()
     if (e) e.preventDefault()
@@ -98,7 +101,7 @@ class Player extends View {
   stopClick(e) {
     if (!this.stage) return
     this.stage.start()
-    this.pause.className = 'pause'
+    this.pause.className = "pause"
     this.stage.stopAll()
     this.stage.focus()
     this.stage.isRunning = false // nb. ??
@@ -108,7 +111,7 @@ class Player extends View {
   fullScreenClick(e) {
     if (e) e.preventDefault()
     if (!this.stage) return
-    document.documentElement.classList.toggle('fs')
+    document.documentElement.classList.toggle("fs")
     this.isFullScreen = !this.isFullScreen
     if (!e || !e.shiftKey) {
       if (this.isFullScreen) {
@@ -129,10 +132,8 @@ class Player extends View {
       }
     }
     if (!this.isFullScreen) {
-      document.body.style.width =
-      document.body.style.height =
-      document.body.style.marginLeft =
-      document.body.style.marginTop = ''
+      document.body.style.width = document.body.style.height = document.body.style.marginLeft = document.body.style.marginTop =
+        ""
     }
     // TODO update App
     this.updateFullScreen()
@@ -155,12 +156,12 @@ class Player extends View {
       var padding = 8
       var w = window.innerWidth - padding * 2
       var h = window.innerHeight - padding - this.controls.offsetHeight
-      w = Math.min(w, h / .75)
-      h = w * .75 + this.controls.offsetHeight
-      document.body.style.width = w + 'px'
-      document.body.style.height = h + 'px'
-      document.body.style.marginLeft = (window.innerWidth - w) / 2 + 'px'
-      document.body.style.marginTop = (window.innerHeight - h - padding) / 2 + 'px'
+      w = Math.min(w, h / 0.75)
+      h = w * 0.75 + this.controls.offsetHeight
+      document.body.style.width = w + "px"
+      document.body.style.height = h + "px"
+      document.body.style.marginLeft = (window.innerWidth - w) / 2 + "px"
+      document.body.style.marginTop = (window.innerHeight - h - padding) / 2 + "px"
       this.stage.setZoom(w / 480)
     } else {
       this.stage.setZoom(this.scale)
@@ -197,7 +198,7 @@ class Player extends View {
     }
   }
 
-  sendProject(project, start=true) {
+  sendProject(project, start = true) {
     if (this.stage) {
       this.stage.stopAll()
       this.stage.pause()
@@ -223,7 +224,7 @@ class Player extends View {
     this._loadProject(request, stage => {
       // save info for sync
       stage._tosh = project
-      for (var i=0; i<stage.children.length; i++) {
+      for (var i = 0; i < stage.children.length; i++) {
         const s = stage.children[i]
         if (s.isSprite) s._tosh = children[i]
       }
@@ -241,7 +242,7 @@ class Player extends View {
   _loadProject(request, cb) {
     var stage = this.stage
     while (this.player.firstChild) this.player.removeChild(this.player.lastChild)
-    this.pause.className = 'pause'
+    this.pause.className = "pause"
 
     request.onload = stage => {
       window.stage = this.stage = stage
@@ -250,7 +251,7 @@ class Player extends View {
       stage.isTurbo = isTurbo
       this.updateFullScreen()
 
-      stage.root.addEventListener('keydown', this.exitFullScreen.bind(this))
+      stage.root.addEventListener("keydown", this.exitFullScreen.bind(this))
 
       this.player.appendChild(stage.root)
       if (cb) {
@@ -271,7 +272,6 @@ class Player extends View {
       request.onload(request.result)
     }
   }
-
 }
 emitter(Player)
 module.exports = Player

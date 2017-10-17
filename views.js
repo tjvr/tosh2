@@ -1,32 +1,30 @@
-'use strict'
-const h = require('v2/h')
-const Collection = require('v2/view/collection')
-const View = require('v2/view/view')
-const emitter = require('v2/emitter')
-
+"use strict"
+const h = require("v2/h")
+const Collection = require("v2/view/collection")
+const View = require("v2/view/view")
+const emitter = require("v2/emitter")
 
 class RightLayout extends View {
   init() {
     this._bb = null
   }
   build() {
-    return h('.v2-view.tosh-player-wrap')
+    return h(".v2-view.tosh-player-wrap")
   }
 
   resize() {
     // maintain player's 4:3 aspect ratio
-    this.children[0].size = {w: 0, h: 0}
+    this.children[0].size = { w: 0, h: 0 }
     this._bb = this.el.getBoundingClientRect()
     const w = this._bb.width - 2
     const h = Math.floor(0.75 * w - 0.25)
-    this.children[0].size = {w, h}
+    this.children[0].size = { w, h }
 
     // adjust height of sprite list
-    this.children[1].el.style.top = (h + 30) + 'px'
+    this.children[1].el.style.top = h + 30 + "px"
     this.children[1].resize()
   }
 }
-
 
 class SpriteList extends Collection {
   constructor() {
@@ -35,7 +33,9 @@ class SpriteList extends Collection {
     this._active = null
   }
 
-  get model() { return super.model }
+  get model() {
+    return super.model
+  }
   set model(value) {
     super.model = value
     const index = value.length > 1 ? 1 : 0
@@ -44,7 +44,7 @@ class SpriteList extends Collection {
 
   build() {
     const el = super.build()
-    el.classList.add('tosh-sprites')
+    el.classList.add("tosh-sprites")
     return el
   }
 
@@ -60,7 +60,7 @@ class SpriteList extends Collection {
     const item = this.itemAtIndex(i)
     if (item) item.selected = true
     let value = this.model.get(i)
-    this.emit('selection change', {target: this, value, oldValue})
+    this.emit("selection change", { target: this, value, oldValue })
     return this
   }
   clearSelection() {
@@ -71,9 +71,9 @@ emitter(SpriteList)
 
 class SpriteItem extends Collection.Item {
   build() {
-    return h('.sprite-icon.v2-collection-item', [
-      this.nameEl = h('.name'),
-      this.thumbEl = h('.thumb'),
+    return h(".sprite-icon.v2-collection-item", [
+      (this.nameEl = h(".name")),
+      (this.thumbEl = h(".thumb")),
     ])
   }
 
@@ -82,13 +82,11 @@ class SpriteItem extends Collection.Item {
     this.nameEl.textContent = sprite.name
     const costume = sprite.costumes.get(sprite.currentCostumeIndex)
     costume._thumbnail.then(thumb => {
-      this.thumbEl.style.backgroundImage = 'url(' + JSON.stringify(thumb.src) + ')'
+      this.thumbEl.style.backgroundImage = "url(" + JSON.stringify(thumb.src) + ")"
     })
   }
 }
 SpriteItem.prototype.keyBindings = []
 SpriteList.Item = SpriteItem
 
-
-module.exports = {SpriteList, RightLayout}
-
+module.exports = { SpriteList, RightLayout }

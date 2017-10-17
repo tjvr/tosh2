@@ -1,30 +1,29 @@
-'use strict'
-const RT = require('v2/rt')
-const h = require('v2/h')
-const {debounce} = require('v2/util')
-const View = require('v2/view/view')
+"use strict"
+const RT = require("v2/rt")
+const h = require("v2/h")
+const { debounce } = require("v2/util")
+const View = require("v2/view/view")
 
-const CodeMirror = require('codemirror')
-require('codemirror/addon/hint/show-hint')
-require('codemirror/addon/scroll/simplescrollbars')
-require('codemirror/addon/scroll/annotatescrollbar')
-require('codemirror/addon/search/matchesonscrollbar')
-require('codemirror/addon/edit/closebrackets')
-require('codemirror/addon/edit/matchbrackets')
-require('codemirror/addon/search/search')
-require('codemirror/addon/search/searchcursor')
-require('codemirror/addon/dialog/dialog')
-require('codemirror/addon/runmode/runmode')
-require('codemirror/keymap/vim')
-require('codemirror/keymap/emacs')
+const CodeMirror = require("codemirror")
+require("codemirror/addon/hint/show-hint")
+require("codemirror/addon/scroll/simplescrollbars")
+require("codemirror/addon/scroll/annotatescrollbar")
+require("codemirror/addon/search/matchesonscrollbar")
+require("codemirror/addon/edit/closebrackets")
+require("codemirror/addon/edit/matchbrackets")
+require("codemirror/addon/search/search")
+require("codemirror/addon/search/searchcursor")
+require("codemirror/addon/dialog/dialog")
+require("codemirror/addon/runmode/runmode")
+require("codemirror/keymap/vim")
+require("codemirror/keymap/emacs")
 
-const nearley = require('nearley')
-const generate = require('./reverse')
-const grammar = nearley.Grammar.fromCompiled(require('./grammar'))
-const measure = require('../measure')
-const Scratch = require('../scratch')
-const mode = require('./mode')
-
+const nearley = require("nearley")
+const generate = require("./reverse")
+const grammar = nearley.Grammar.fromCompiled(require("./grammar"))
+const measure = require("../measure")
+const Scratch = require("../scratch")
+const mode = require("./mode")
 
 class Editor extends View {
   constructor() {
@@ -38,10 +37,12 @@ class Editor extends View {
   dblclick() {}
 
   build() {
-    return h('.v2-view.tosh-editor')
+    return h(".v2-view.tosh-editor")
   }
 
-  get model() {return this._model}
+  get model() {
+    return this._model
+  }
   set model(sprite) {
     if (this._model === sprite) return
     // TODO save pending changes
@@ -66,7 +67,7 @@ class Editor extends View {
     // TODO sort scripts by y position
     const scripts = this.model.scripts.map(([x, y, blocks]) => blocks)
     const source = generate(scripts)
-    return typeof source === 'string' ? source : "error!"
+    return typeof source === "string" ? source : "error!"
   }
 
   compile() {
@@ -78,7 +79,7 @@ class Editor extends View {
       parser.feed(source)
     } catch (e) {
       console.error(e)
-      model.scripts = {error: e}
+      model.scripts = { error: e }
       return
     }
     const results = parser.results
@@ -95,14 +96,14 @@ class Editor extends View {
 
   _listen() {
     const model = this._model
-    this.cm.setValue(model._source = model._source || this.generate())
+    this.cm.setValue((model._source = model._source || this.generate()))
     if (model._history) this.cm.doc.setHistory(model._history)
     else this.cm.doc.clearHistory()
-    model.on('change', this._changed)
+    model.on("change", this._changed)
   }
   _unlisten() {
     const model = this._model
-    model.unlisten('change', this._changed)
+    model.unlisten("change", this._changed)
     model._history = this.cm.doc.getHistory()
     model._source = this.cm.getValue()
     this.compile()
@@ -111,11 +112,13 @@ class Editor extends View {
     // TODO this.model.scripts ?
   }
 
-  resize() { this._layout() }
+  resize() {
+    this._layout()
+  }
   _layout() {
     // set container size
     const bb = this.el.parentNode.getBoundingClientRect()
-    this.el.style.width = bb.width + 'px'
+    this.el.style.width = bb.width + "px"
 
     // fix layout
     this.cm.refresh()
@@ -165,7 +168,6 @@ class Editor extends View {
     })
   }
   */
-
 }
 
 var extraKeys = {
@@ -178,7 +180,6 @@ var extraKeys = {
   // 'Tab': function(cm) {
   //   // seek next input
   //   if (inputSeek(cm, +1)) return;
-
   //   // auto-indent
   //   if (cm.somethingSelected()) {
   //     cm.indentSelection('smart');
@@ -188,25 +189,33 @@ var extraKeys = {
   //   // seek prev input
   //   if (inputSeek(cm, -1)) return;
   // },
-};
+}
 //extraKeys[Host.isMac ? 'Cmd-F' : 'Ctrl-F'] = 'findPersistent';
 
 Editor.prototype.cmOptions = {
   mode: {
-    name: 'tosh',
+    name: "tosh",
     grammar,
     highlight: rule => {
       switch (rule.name) {
-        case '_greenFlag': return 's-green'
-        case 'b0': return 'false'
-        case 'end': case 'else': return 's-control'
-        case 's0': return 'string'
-        case 'n0': return 'number'
-        case '_': case '__': return ' '
+        case "_greenFlag":
+          return "s-green"
+        case "b0":
+          return "false"
+        case "end":
+        case "else":
+          return "s-control"
+        case "s0":
+          return "string"
+        case "n0":
+          return "number"
+        case "_":
+        case "__":
+          return " "
       }
       const factory = rule.postprocess
       const selector = factory && factory.selector
-      return selector && 's-' + Scratch.blockInfo([selector]).category
+      return selector && "s-" + Scratch.blockInfo([selector]).category
     },
   },
 
@@ -229,8 +238,7 @@ Editor.prototype.cmOptions = {
 
   autoCloseBrackets: true,
   matchBrackets: "()<>[]''\"\"",
-  scrollbarStyle: 'simple',
+  scrollbarStyle: "simple",
 }
 
 module.exports = Editor
-

@@ -1,12 +1,12 @@
 const inputPat = /(%[a-zA-Z](?:\.[a-zA-Z]+)?)/g
 
 const inputShapes = {
-  '%b': 'boolean',
-  '%c': 'color',
-  '%d': 'number-menu',
-  '%m': 'readonly-menu',
-  '%n': 'number',
-  '%s': 'string',
+  "%b": "boolean",
+  "%c": "color",
+  "%d": "number-menu",
+  "%m": "readonly-menu",
+  "%n": "number",
+  "%s": "string",
 }
 
 function getInputShape(input) {
@@ -16,6 +16,7 @@ function getInputShape(input) {
 
 /*****************************************************************************/
 
+// prettier-ignore
 const commands = {
   "forward:": {category: "motion", shape: "stack", spec: "move %n steps"},
   "turnRight:": {category: "motion", shape: "stack", spec: "turn @turnRight %n degrees"},
@@ -170,11 +171,11 @@ function augment(info) {
 
 function blockInfo(array) {
   const selector = array[0]
-  if (selector === 'call') {
+  if (selector === "call") {
     const info = {
       spec: array[1],
-      shape: 'stack',
-      category: 'custom',
+      shape: "stack",
+      category: "custom",
     }
     augment(info)
     return info
@@ -198,4 +199,4 @@ function blockInfo(array) {
   }
 */
 
-module.exports = {inputPat, blockInfo, getInputShape}
+module.exports = { inputPat, blockInfo, getInputShape }

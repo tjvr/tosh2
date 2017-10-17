@@ -1,7 +1,6 @@
-'use strict'
-const CodeMirror = require('codemirror')
-const nearley = require('nearley')
-
+"use strict"
+const CodeMirror = require("codemirror")
+const nearley = require("nearley")
 
 class Highlighter {
   constructor(parser, getClass) {
@@ -37,37 +36,39 @@ class Highlighter {
     var state = endCol.states.find(s => s.reference < endCol.index)
 
     // find root
-    const stack = [{state}]
+    const stack = [{ state }]
     while (state.reference > 0) {
       if (state.left) {
         state = state.left
       } else {
         state = state.wantedBy[0]
-        stack.push({state})
+        stack.push({ state })
       }
     }
     return stack
   }
 
   highlight(startCol, endCol, emit) {
-    if (startCol === endCol) { return }
+    if (startCol === endCol) {
+      return
+    }
 
     const start = startCol.index
     const stack = this._getRoot(start, endCol)
 
     // inherit classNames
     var className = null
-    for (var i=stack.length; i--; ) {
+    for (var i = stack.length; i--; ) {
       const item = stack[i]
       item.className = className = this.getClass(item.state.rule) || className
     }
 
     // emit tokens in reverse order until we reach start
-    var className = ''
-    stack.forEach(({state, className}) => {
+    var className = ""
+    stack.forEach(({ state, className }) => {
       this._c(start, state, className, emit)
     })
- }
+  }
 }
 
 class Completer {
@@ -78,11 +79,19 @@ class Completer {
     this.history = []
   }
 
-  feed(line) { this.parser.feed(line) }
-  save() { return this.parser.save() }
-  restore(col) { return this.parser.restore(col) }
+  feed(line) {
+    this.parser.feed(line)
+  }
+  save() {
+    return this.parser.save()
+  }
+  restore(col) {
+    return this.parser.restore(col)
+  }
 
-  highlight(start, end, emit) { return this.highlighter.highlight(start, end, emit) }
+  highlight(start, end, emit) {
+    return this.highlighter.highlight(start, end, emit)
+  }
 
   /*
   rewind(index) { return this.leftParser.rewind(index) }
@@ -92,131 +101,141 @@ class Completer {
   */
 }
 
-CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
-  // Use setOption('mode', ...) to change the grammar.
-  const completer = new Completer(modeCfg.grammar, {
-    highlight: modeCfg.highlight, // getClass
-  })
-  completer.feed("")
-  const startColumn = completer.save()
-  const lexer = modeCfg.grammar.lexer
+CodeMirror.defineMode(
+  "tosh",
+  (module.exports = function(cfg, modeCfg) {
+    // Use setOption('mode', ...) to change the grammar.
+    const completer = new Completer(modeCfg.grammar, {
+      highlight: modeCfg.highlight, // getClass
+    })
+    completer.feed("")
+    const startColumn = completer.save()
+    const lexer = modeCfg.grammar.lexer
 
-  class State {
-    constructor(column, indent) {
-      this.column = column
-      this.line = []
-      this.indent = indent || 0
-    }
-
-    // TODO does this actually get called after every \n ?
-    copy() {
-      const s = new State(this.column, this.indent)
-      return s
-    }
-
-    highlight(line) {
-      const startCol = this.column
-      completer.restore(startCol)
-
-      // TODO handle previous error
-
-      let errorToken
-      try {
-        completer.feed(line)
-      } catch (err) {
-        errorToken = err.token
-      }
-      const endCol = this.column = completer.save()
-
-      const remaining = []
-      var token
-      while (token = lexer.next()) {
-        remaining.push(token)
+    class State {
+      constructor(column, indent) {
+        this.column = column
+        this.line = []
+        this.indent = indent || 0
       }
 
-      const ranges = []
-      for (var i=remaining.length; i--; ) {
-        const token = remaining[i]
-        const text = line.substr(token.offset, token.text.length)
-        ranges.push({className: 'error', text})
+      // TODO does this actually get called after every \n ?
+      copy() {
+        const s = new State(this.column, this.indent)
+        return s
       }
 
-      const isPartial = !/\s$/.test(line)
-      if (errorToken) {
-        const text = line.slice(errorToken.offset)
-        ranges.push({className: /^["']/.test(text) ? 'string' : remaining.length ? 'error' : null, text})
-      }
+      highlight(line) {
+        const startCol = this.column
+        completer.restore(startCol)
 
-      // TODO can we avoid running highlighting if CM is using processLine?
-      completer.highlight(startCol, endCol, (className, token) => {
-        const text = line.substr(token.offset, token.text.length)
-        if (text === '{') { this.indent++ }
-        if (text === '}') { this.indent-- }
-        ranges.push({
-          className: (className && className.trim()) || null,
-          text: text,
-        })
-      })
-      return ranges
-    }
+        // TODO handle previous error
 
-    token(stream) {
-      if (stream.sol()) {
-        if (this.column.index > 0) {
-          this.highlight('\n')
+        let errorToken
+        try {
+          completer.feed(line)
+        } catch (err) {
+          errorToken = err.token
+        }
+        const endCol = (this.column = completer.save())
+
+        const remaining = []
+        var token
+        while ((token = lexer.next())) {
+          remaining.push(token)
         }
 
-        let m = stream.match(/.*$/, false) // don't consume
-        this.line = this.highlight(m[0])
-        if (!this.line.length) throw new Error('oh bother')
+        const ranges = []
+        for (var i = remaining.length; i--; ) {
+          const token = remaining[i]
+          const text = line.substr(token.offset, token.text.length)
+          ranges.push({ className: "error", text })
+        }
+
+        const isPartial = !/\s$/.test(line)
+        if (errorToken) {
+          const text = line.slice(errorToken.offset)
+          ranges.push({
+            className: /^["']/.test(text) ? "string" : remaining.length ? "error" : null,
+            text,
+          })
+        }
+
+        // TODO can we avoid running highlighting if CM is using processLine?
+        completer.highlight(startCol, endCol, (className, token) => {
+          const text = line.substr(token.offset, token.text.length)
+          if (text === "{") {
+            this.indent++
+          }
+          if (text === "}") {
+            this.indent--
+          }
+          ranges.push({
+            className: (className && className.trim()) || null,
+            text: text,
+          })
+        })
+        return ranges
       }
 
-      let range = this.line.pop()
-      if (!range) {
-        // fix closebrackets plugin bug
-        stream.match(/.*$/) // consume
-        return ""
+      token(stream) {
+        if (stream.sol()) {
+          if (this.column.index > 0) {
+            this.highlight("\n")
+          }
+
+          let m = stream.match(/.*$/, false) // don't consume
+          this.line = this.highlight(m[0])
+          if (!this.line.length) throw new Error("oh bother")
+        }
+
+        let range = this.line.pop()
+        if (!range) {
+          // fix closebrackets plugin bug
+          stream.match(/.*$/) // consume
+          return ""
+        }
+        if (range.className === "error" && /^['"]/.test(range.text)) {
+          range.className = "string"
+        }
+        if (!stream.match(range.text)) {
+          // consume
+          throw new Error("Does not match stream")
+        }
+        return range.className
       }
-      if (range.className === 'error' && /^['"]/.test(range.text)) {
-        range.className = 'string'
-      }
-      if (!stream.match(range.text)) { // consume
-        throw new Error("Does not match stream")
-      }
-      return range.className
     }
-  }
 
+    /* CodeMirror mode */
 
-  /* CodeMirror mode */
+    return {
+      name: "tosh",
+      startState: () => new State(startColumn, 0),
+      copyState: state => state.copy(),
+      token: (stream, state) => state.token(stream),
+      blankLine: state => {
+        state.highlight("\n")
+        return ""
+      },
 
-  return {
-    name: 'tosh',
-    startState: () => new State(startColumn, 0),
-    copyState: state => state.copy(),
-    token: (stream, state) => state.token(stream),
-    blankLine: state => {
-      state.highlight('\n')
-      return ''
-    },
+      indent: function(state, textAfter) {
+        var indent = state.indent
+        if (/^\s*\}\s*$/.test(textAfter)) indent--
+        if (isNaN(cfg.indentUnit)) {
+          throw new Error("oh bother")
+        }
+        return cfg.indentUnit * indent
+      },
 
-    indent: function(state, textAfter) {
-      var indent = state.indent
-      if (/^\s*\}\s*$/.test(textAfter)) indent--
-      if (isNaN(cfg.indentUnit)) { throw new Error('oh bother') }
-      return cfg.indentUnit * indent
-    },
+      _completer: completer,
 
-    _completer: completer,
-
-    // TODO electric etc
-    electricInput: /^\s*[{}]$/,
-    // blockCommentStart: "/*",
-    // blockCommentEnd: "*/",
-    // lineComment: "//",
-    // fold: "brace",
-    closeBrackets: "()[]<>''\"\"",
-
-  }
-})
-
+      // TODO electric etc
+      electricInput: /^\s*[{}]$/,
+      // blockCommentStart: "/*",
+      // blockCommentEnd: "*/",
+      // lineComment: "//",
+      // fold: "brace",
+      closeBrackets: "()[]<>''\"\"",
+    }
+  })
+)

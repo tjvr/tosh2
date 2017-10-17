@@ -13,7 +13,8 @@
     "watch": "prcl -w index.js app/parcel.js",
     "server": "http-server -s",
     "grammar": "nearleyc editor/grammar.ne > editor/grammar.js",
-    "build": "webpack && cp app/icons.svg build/icons.svg"
+    "build": "webpack && cp app/icons.svg build/icons.svg",
+    "fmt": "prettier --print-width=100 --no-semi --trailing-comma es5 --write *.js {test}/*.test.js editor/{index,mode,reverse}.js"
   },
   "dependencies": {
     "codemirror": "^5.25.0",
@@ -31,6 +32,7 @@
     "http-server": "^0.9.0",
     "jest": "^19.0.2",
     "prcl": "^0.4.0",
+    "prettier": "1.7.4",
     "webpack": "^2.3.3"
   }
 }
