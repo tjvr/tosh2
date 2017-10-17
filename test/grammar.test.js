@@ -124,6 +124,8 @@ describe('parse', () => {
     expect(parseBlock('say "Hello \\"world\\"!"')).toEqual(['say:', 'Hello "world"!'])
   })
 
+  // TODO mathFunc
+
 })
 
 

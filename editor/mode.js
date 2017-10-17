@@ -172,6 +172,11 @@ CodeMirror.defineMode('tosh', module.exports = function(cfg, modeCfg) {
       }
 
       let range = this.line.pop()
+      if (!range) {
+        // fix closebrackets plugin bug
+        stream.match(/.*$/) // consume
+        return ""
+      }
       if (range.className === 'error' && /^['"]/.test(range.text)) {
         range.className = 'string'
       }
