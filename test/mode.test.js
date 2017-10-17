@@ -1,7 +1,6 @@
-
-const Editor = require('../editor')
-const Mode = require('../editor/mode')
-const CodeMirror = require('codemirror')
+const Editor = require("../editor")
+const Mode = require("../editor/mode")
+const CodeMirror = require("codemirror")
 
 /* based on codemirror/test/mode_test.js */
 const testMode = (function() {
@@ -16,19 +15,23 @@ const testMode = (function() {
 
   var styleName = /[\w&-_]+/g
   function parseTokens(strs) {
-    var tokens = [], plain = ""
+    var tokens = [],
+      plain = ""
     for (var i = 0; i < strs.length; ++i) {
       if (i) plain += "\n"
-      var str = strs[i], pos = 0
+      var str = strs[i],
+        pos = 0
       while (pos < str.length) {
-        var style = null, text
-        if (str.charAt(pos) == "[" && str.charAt(pos+1) != "[") {
+        var style = null,
+          text
+        if (str.charAt(pos) == "[" && str.charAt(pos + 1) != "[") {
           styleName.lastIndex = pos + 1
           var m = styleName.exec(str)
           style = m[0].replace(/&/g, " ")
           var textStart = pos + style.length + 2
           var end = findSingle(str, textStart, "]")
-          if (end == null) throw new Error("Unterminated token at " + pos + " in '" + str + "'" + style)
+          if (end == null)
+            throw new Error("Unterminated token at " + pos + " in '" + str + "'" + style)
           text = str.slice(textStart, end)
           pos = end + 1
         } else {
@@ -37,27 +40,32 @@ const testMode = (function() {
           text = str.slice(pos, end)
           pos = end
         }
-        text = text.replace(/\[\[|\]\]/g, function(s) {return s.charAt(0);})
-        tokens.push({style: style, text: text})
+        text = text.replace(/\[\[|\]\]/g, function(s) {
+          return s.charAt(0)
+        })
+        tokens.push({ style: style, text: text })
         plain += text
       }
     }
-    return {tokens: tokens, plain: plain}
+    return { tokens: tokens, plain: plain }
   }
 
   function highlight(string, mode) {
     var state = mode.startState()
 
-    var lines = string.replace(/\r\n/g,'\n').split('\n')
-    var st = [], pos = 0
+    var lines = string.replace(/\r\n/g, "\n").split("\n")
+    var st = [],
+      pos = 0
     for (var i = 0; i < lines.length; ++i) {
-      var line = lines[i], newLine = true
+      var line = lines[i],
+        newLine = true
       if (mode.indent) {
         var ws = line.match(/^\s*/)[0]
         var indent = mode.indent(state, line.slice(ws.length))
         if (indent != CodeMirror.Pass && indent != ws.length)
           (st.indentFailures || (st.indentFailures = [])).push(
-            "Indentation of line " + (i + 1) + " is " + indent + " (expected " + ws.length + ")")
+            "Indentation of line " + (i + 1) + " is " + indent + " (expected " + ws.length + ")"
+          )
       }
       var stream = new CodeMirror.StringStream(line)
       if (line == "" && mode.blankLine) mode.blankLine(state)
@@ -68,16 +76,20 @@ const testMode = (function() {
         if (j == 10)
           throw new Error("Failed to advance the stream." + stream.string + " " + stream.pos)
         var substr = stream.current()
-        if (compare && compare.indexOf(" ") > -1) compare = compare.split(' ').sort().join(' ')
+        if (compare && compare.indexOf(" ") > -1)
+          compare = compare
+            .split(" ")
+            .sort()
+            .join(" ")
         stream.start = stream.pos
-        if (pos && st[pos-1].style == compare && !newLine) {
-          st[pos-1].text += substr
+        if (pos && st[pos - 1].style == compare && !newLine) {
+          st[pos - 1].text += substr
         } else if (substr) {
-          st[pos++] = {style: compare, text: substr}
+          st[pos++] = { style: compare, text: substr }
         }
         // Give up when line is ridiculously long
         if (stream.pos > 5000) {
-          st[pos++] = {style: null, text: this.text.slice(stream.pos)}
+          st[pos++] = { style: null, text: this.text.slice(stream.pos) }
           break
         }
         newLine = false
@@ -91,8 +103,12 @@ const testMode = (function() {
     var expectedOutput = []
     for (var i = 0; i < expected.length; ++i) {
       var sty = expected[i].style
-      if (sty && sty.indexOf(" ")) sty = sty.split(' ').sort().join(' ')
-      expectedOutput.push({style: sty, text: expected[i].text})
+      if (sty && sty.indexOf(" "))
+        sty = sty
+          .split(" ")
+          .sort()
+          .join(" ")
+      expectedOutput.push({ style: sty, text: expected[i].text })
     }
 
     var observedOutput = highlight(text, mode)
@@ -107,26 +123,23 @@ const testMode = (function() {
       return compare(data.plain, data.tokens, mode)
     })
   }
-
 })()
 
 //const mode = CodeMirror.getMode({indentUnit: 2}, 'tosh')
 const modeCfg = Editor.prototype.cmOptions.mode
-const cfg = {tabSize: 2, indentUnit: 2}
+const cfg = { tabSize: 2, indentUnit: 2 }
 const mode = Mode(cfg, modeCfg)
 
-
-describe('State', () => {
-
+describe("State", () => {
   const grammar = modeCfg.grammar
   const lexer = grammar.lexer
 
-  test('maintains index', () => {
+  test("maintains index", () => {
     const state = mode.startState()
     var stream
     expect(state.column.index).toBe(0)
-    stream = new CodeMirror.StringStream('stamp')
-    expect(mode.token(stream, state)).toBe('s-pen')
+    stream = new CodeMirror.StringStream("stamp")
+    expect(mode.token(stream, state)).toBe("s-pen")
     expect(state.column.index).toBe(1)
     expect(state.column.lexerState.line).toBe(1)
     expect(lexer.index).toBe(5)
@@ -135,17 +148,16 @@ describe('State', () => {
     expect(state.column.index).toBe(2)
     expect(state.column.lexerState.line).toBe(2)
 
-    stream = new CodeMirror.StringStream('stamp')
-    expect(mode.token(stream, state)).toBe('s-pen')
+    stream = new CodeMirror.StringStream("stamp")
+    expect(mode.token(stream, state)).toBe("s-pen")
     expect(state.column.index).toBe(4)
     expect(state.column.lexerState.line).toBe(3)
   })
 
   // test('can be copied')
-
 })
 
-
+// prettier-ignore
 describe('highlight', () => {
 
   function MT(name) { testMode(name, mode, Array.prototype.slice.call(arguments, 1)); }
@@ -217,4 +229,3 @@ describe('highlight', () => {
     '[s-looks say] [string "potato \\"waffles\\"."] ')
 
 })
-

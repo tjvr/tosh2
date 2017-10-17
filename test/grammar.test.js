@@ -1,6 +1,5 @@
-
-const nearley = require('nearley')
-const grammar = nearley.Grammar.fromCompiled(require('../editor/grammar'))
+const nearley = require("nearley")
+const grammar = nearley.Grammar.fromCompiled(require("../editor/grammar"))
 
 function parseFile(source) {
   const parser = new nearley.Parser(grammar)
@@ -26,9 +25,7 @@ function parseBlock(source) {
   return blocks[0]
 }
 
-
-describe('tokenize', () => {
-
+describe("tokenize", () => {
   const lexer = grammar.lexer
   const source = `
   when flag clicked
@@ -39,99 +36,87 @@ describe('tokenize', () => {
 
   // TODO move backslash-escapes into tokenizer?
 
-  test('file', () => {
+  test("file", () => {
     lexer.reset(source)
     expect(Array.from(lexer).map(t => `${t.type} ${t.value}`)).toEqual([
-  "NL \n",
-  "WS   ",
-  "symbol when",
-  "WS  ",
-  "symbol flag",
-  "WS  ",
-  "symbol clicked",
-  "NL \n",
-  "WS   ",
-  "symbol say",
-  "WS  ",
-  'string Hello \\"world\\"!',
-  "NL \n",
-  "WS   ",
-  "symbol forever",
-  "WS  ",
-  "{ {",
-  "NL \n",
-  "WS     ",
-  "symbol move",
-  "WS  ",
-  "number 10",
-  "WS  ",
-  "symbol steps",
-  "NL \n",
-  "WS   ",
-  "} }",
+      "NL \n",
+      "WS   ",
+      "symbol when",
+      "WS  ",
+      "symbol flag",
+      "WS  ",
+      "symbol clicked",
+      "NL \n",
+      "WS   ",
+      "symbol say",
+      "WS  ",
+      'string Hello \\"world\\"!',
+      "NL \n",
+      "WS   ",
+      "symbol forever",
+      "WS  ",
+      "{ {",
+      "NL \n",
+      "WS     ",
+      "symbol move",
+      "WS  ",
+      "number 10",
+      "WS  ",
+      "symbol steps",
+      "NL \n",
+      "WS   ",
+      "} }",
     ])
   })
-
 })
 
-
-describe('parse', () => {
-
-  test('line', () => {
-    expect(parseBlock('stamp')).toEqual(['stampCostume'])
-    expect(parseBlock('say "hello!"')).toEqual(['say:', "hello!"])
+describe("parse", () => {
+  test("line", () => {
+    expect(parseBlock("stamp")).toEqual(["stampCostume"])
+    expect(parseBlock('say "hello!"')).toEqual(["say:", "hello!"])
   })
 
-  test('file padding', () => {
-    expect(parseBlock('\n \nstamp\n\n')).toEqual(['stampCostume'])
+  test("file padding", () => {
+    expect(parseBlock("\n \nstamp\n\n")).toEqual(["stampCostume"])
   })
 
-  test('scripts', () => {
-    expect(parseScript('\n\nstamp\nstamp\n\n')).toEqual([
-      ['stampCostume'],
-      ['stampCostume'],
-    ])
-    expect(parseScript('\n\nstamp\nstamp\nstamp\n\n')).toEqual([
-      ['stampCostume'],
-      ['stampCostume'],
-      ['stampCostume'],
+  test("scripts", () => {
+    expect(parseScript("\n\nstamp\nstamp\n\n")).toEqual([["stampCostume"], ["stampCostume"]])
+    expect(parseScript("\n\nstamp\nstamp\nstamp\n\n")).toEqual([
+      ["stampCostume"],
+      ["stampCostume"],
+      ["stampCostume"],
     ])
   })
 
-  test('blank lines', () => {
-    const output = [
-      [ ['stampCostume'] ],
-      [ ['stampCostume'] ],
-    ]
-    expect(parseFile('\n\nstamp\n\nstamp\n\n')).toEqual(output)
-    expect(parseFile('\n\nstamp\n \t\nstamp\n\n')).toEqual(output)
+  test("blank lines", () => {
+    const output = [[["stampCostume"]], [["stampCostume"]]]
+    expect(parseFile("\n\nstamp\n\nstamp\n\n")).toEqual(output)
+    expect(parseFile("\n\nstamp\n \t\nstamp\n\n")).toEqual(output)
   })
 
   test("braces don't need padding", () => {
-    expect(parseBlock('forever{\n}')).toEqual(['doForever', null])
+    expect(parseBlock("forever{\n}")).toEqual(["doForever", null])
   })
 
-  test('operator precedence', () => {
-    expect(parseBlock('say 2 * 3 + 4')).toEqual(['say:', ['+', ['*', 2, 3], 4]])
-    expect(parseBlock('say 2 + 3 * 4')).toEqual(['say:', ['+', 2, ['*', 3, 4]]])
+  test("operator precedence", () => {
+    expect(parseBlock("say 2 * 3 + 4")).toEqual(["say:", ["+", ["*", 2, 3], 4]])
+    expect(parseBlock("say 2 + 3 * 4")).toEqual(["say:", ["+", 2, ["*", 3, 4]]])
   })
 
-  test('indented brace', () => {
-    expect(parseBlock('forever {\n   }')).toEqual(['doForever', null])
+  test("indented brace", () => {
+    expect(parseBlock("forever {\n   }")).toEqual(["doForever", null])
   })
 
-  test('backslash-escapes', () => {
-    expect(parseBlock('say "Hello \\"world\\"!"')).toEqual(['say:', 'Hello "world"!'])
+  test("backslash-escapes", () => {
+    expect(parseBlock('say "Hello \\"world\\"!"')).toEqual(["say:", 'Hello "world"!'])
   })
 
   // TODO mathFunc
-
 })
 
-
-describe('generate', () => {
-
-  const generate = require('../editor/reverse.js')
+describe("generate", () => {
+  const generate = require("../editor/reverse.js")
 
   function checkFile(text, scripts) {
     if (!scripts) scripts = parseFile(text)
@@ -149,43 +134,52 @@ describe('generate', () => {
     checkScript(text, [block])
   }
 
-  test('block', () => {
-    checkBlock('say "hello"', ['say:', 'hello'])
+  test("block", () => {
+    checkBlock('say "hello"', ["say:", "hello"])
   })
 
-  test('operator precedence', () => {
-    checkBlock('say 2 * 3 + 4', ['say:', ['+', ['*', 2, 3], 4]])
-    checkBlock('say 2 + 3 * 4', ['say:', ['+', 2, ['*', 3, 4]]])
-    checkBlock('say (2 + 3) * 4', ['say:', ['*', ['+', 2, 3], 4]])
-    checkBlock('say 2 * (3 + 4)', ['say:', ['*', 2, ['+', 3, 4]]])
+  test("operator precedence", () => {
+    checkBlock("say 2 * 3 + 4", ["say:", ["+", ["*", 2, 3], 4]])
+    checkBlock("say 2 + 3 * 4", ["say:", ["+", 2, ["*", 3, 4]]])
+    checkBlock("say (2 + 3) * 4", ["say:", ["*", ["+", 2, 3], 4]])
+    checkBlock("say 2 * (3 + 4)", ["say:", ["*", 2, ["+", 3, 4]]])
   })
 
-  test('script', () => {
-    checkScript('show\nhide', [['show'], ['hide']])
+  test("script", () => {
+    checkScript("show\nhide", [["show"], ["hide"]])
   })
 
-  test('scripts', () => {
-    checkFile('stamp\n\nstamp')
+  test("scripts", () => {
+    checkFile("stamp\n\nstamp")
   })
 
-  test('c-blocks', () => {
-    checkBlock('repeat 10 {\n\tstamp\n}', ['doRepeat', 10, [['stampCostume']]])
-    checkBlock('if <> then {\n\tstamp\n}', ['doIf', false, [['stampCostume']]])
-    checkBlock('if <> then {\n\tshow\n} else {\n\thide\n}', ['doIfElse', false, [['show']], [['hide']]])
-    checkBlock('repeat until <> {\n\tif on edge, bounce\n}', ['doUntil', false, [['bounceOffEdge']]])
-    checkBlock('forever {\n\thide\n}', ['doForever', [['hide']]])
+  test("c-blocks", () => {
+    checkBlock("repeat 10 {\n\tstamp\n}", ["doRepeat", 10, [["stampCostume"]]])
+    checkBlock("if <> then {\n\tstamp\n}", ["doIf", false, [["stampCostume"]]])
+    checkBlock("if <> then {\n\tshow\n} else {\n\thide\n}", [
+      "doIfElse",
+      false,
+      [["show"]],
+      [["hide"]],
+    ])
+    checkBlock("repeat until <> {\n\tif on edge, bounce\n}", [
+      "doUntil",
+      false,
+      [["bounceOffEdge"]],
+    ])
+    checkBlock("forever {\n\thide\n}", ["doForever", [["hide"]]])
   })
 
-  test('empty c-blocks', () => {
-    checkBlock('repeat 10 {\n}', ['doRepeat', 10, null])
-    checkBlock('if <> then {\n}', ['doIf', false, null])
-    checkBlock('if <> then {\n} else {\n}', ['doIfElse', false, null, null])
-    checkBlock('repeat until <> {\n}', ['doUntil', false, null])
-    checkBlock('forever {\n}', ['doForever', null])
+  test("empty c-blocks", () => {
+    checkBlock("repeat 10 {\n}", ["doRepeat", 10, null])
+    checkBlock("if <> then {\n}", ["doIf", false, null])
+    checkBlock("if <> then {\n} else {\n}", ["doIfElse", false, null, null])
+    checkBlock("repeat until <> {\n}", ["doUntil", false, null])
+    checkBlock("forever {\n}", ["doForever", null])
   })
 
-  test('test script', () => {
-    checkScript('when flag clicked\npen down\nmove 10 steps\nturn cw 9 degrees')
+  test("test script", () => {
+    checkScript("when flag clicked\npen down\nmove 10 steps\nturn cw 9 degrees")
     checkScript(`when flag clicked
 go to x: 0 y: 0
 pen down
@@ -195,10 +189,7 @@ forever {
 }`)
   })
 
-  test('empty file', () => {
-    checkFile('', [])
+  test("empty file", () => {
+    checkFile("", [])
   })
-
-
 })
-

@@ -1,21 +1,18 @@
+const fs = require("fs")
 
-const fs = require('fs')
+const Scratch = require("../scratch")
+const measure = require("../measure")
 
-const Scratch = require('../scratch')
-const measure = require('../measure')
-
-
-describe('block info', () => {
-
-  test('when flag clicked', () => {
-    expect(Scratch.blockInfo(['whenGreenFlag'])).toMatchObject({
-      shape: 'hat',
-      category: 'events',
+describe("block info", () => {
+  test("when flag clicked", () => {
+    expect(Scratch.blockInfo(["whenGreenFlag"])).toMatchObject({
+      shape: "hat",
+      category: "events",
     })
   })
-
 })
 
+// prettier-ignore
 describe('measure scripts', () => {
 
   function check(height, array) {
@@ -117,4 +114,3 @@ describe('measure scripts', () => {
   test("93", () => check(65, [["procDef", "aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaaaaaaaaaa %b", ["boolean1"], [null], false]]))
 
 })
-

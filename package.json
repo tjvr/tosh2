@@ -14,7 +14,7 @@
     "server": "http-server -s",
     "grammar": "nearleyc editor/grammar.ne > editor/grammar.js",
     "build": "webpack && cp app/icons.svg build/icons.svg",
-    "fmt": "prettier --print-width=100 --no-semi --trailing-comma es5 --write *.js {test}/*.test.js editor/{index,mode,reverse}.js"
+    "fmt": "prettier --print-width=100 --no-semi --trailing-comma es5 --write *.js test/*.test.js editor/{index,mode,reverse}.js"
   },
   "dependencies": {
     "codemirror": "^5.25.0",

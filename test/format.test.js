@@ -1,11 +1,8 @@
+const fs = require("fs")
+const JSZip = (global.JSZip = require("jszip"))
+require("../phosphorus/phosphorus.js")
 
-const fs = require('fs')
-const JSZip = global.JSZip = require('jszip')
-require('../phosphorus/phosphorus.js')
-
-const Project = require('../format')
-
-
+const Project = require("../format")
 
 function readZip(name) {
   return new Promise((resolve, reject) => {
@@ -17,19 +14,15 @@ function readZip(name) {
   })
 }
 
-
-describe('load/save', () => {
-
-  test('nutella round-trip', () => {
-    return readZip('test/projects/nutella.sb2').then(zip => {
+describe("load/save", () => {
+  test("nutella round-trip", () => {
+    return readZip("test/projects/nutella.sb2").then(zip => {
       return Project.load(zip)
-      .then(Project.save)
-      .then(toshZip => {
-        const json = JSON.parse(zip.file('project.json').asText())
-        expect(json).toMatchSnapshot()
-      })
+        .then(Project.save)
+        .then(toshZip => {
+          const json = JSON.parse(zip.file("project.json").asText())
+          expect(json).toMatchSnapshot()
+        })
     })
   })
-
 })
-
