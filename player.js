@@ -14,7 +14,7 @@ class Player extends View {
     this.isFullScreen = false
     this.sending = false
 
-    this.flag.addEventListener("click", e => this.emit("flag click", e))
+    this.flag.addEventListener("click", this.flagClick.bind(this))
     this.pause.addEventListener("click", this.pauseClick.bind(this))
     this.stop.addEventListener("click", this.stopClick.bind(this))
     this.fullScreen.addEventListener("click", this.fullScreenClick.bind(this))
@@ -39,7 +39,7 @@ class Player extends View {
         (this.stop = h("span.stop")),
         (this.pause = h("span.pause")),
         (this.flag = h("span.flag", { title: "Shift+click to enable turbo mode." })),
-        (this.turbo = h(".turbo")),
+        (this.turbo = h(".turbo", "Turbo Mode")),
         //this.smallStageBtn = h('span.small-stage.disabled'),
         (this.fullScreen = h("span.full-screen")),
       ])),
@@ -64,24 +64,21 @@ class Player extends View {
   }
 
   turboClick() {
-    stage.isTurbo = !stage.isTurbo
-    flag.title = stage.isTurbo
+    this.stage.isTurbo = !this.stage.isTurbo
+    this.flag.title = this.stage.isTurbo
       ? "Turbo mode enabled. Shift+click to disable."
       : "Shift+click to enable turbo mode."
-    turbo.style.display = stage.isTurbo ? "block" : "none"
+    this.turbo.style.display = this.stage.isTurbo ? "block" : "none"
   }
 
   flagClick(e) {
     if (!this.stage) return
     if (e.shiftKey) {
       this.turboClick()
+      this.stage.focus()
     } else {
-      this.stage.start()
-      this.pause.className = "pause"
-      this.stage.stopAll()
-      this.stage.triggerGreenFlag()
+      this.emit("flag click", e)
     }
-    this.stage.focus()
     e.preventDefault()
   }
 
